@@ -29,11 +29,13 @@ The role will accept an action variable that will control the operation to be pe
 - `revert` - merge snapshots to origin and reboot (i.e., rollback)
 - `remove` - remove snapshots
 
-__NOTE:__ Both the `check` and `create` actions will verify free space and should fail if there is not enough. A `check` or `create` action should fail if any snapshots already exist for the given `snapshot_set_name`.
+Both the `check` and `create` actions will verify free space and should fail if there is not enough. A `check` or `create` action should fail if any snapshots already exist for the given `snapshot_set_name`.
+
+The `revert` action will verify that all snapshots in the set are still active state before doing any merges. This is to prevent rolling back if any snapshots have become invalidated in which case the `revert` action should fail.
 
 #### `use_boom`
 
-Boolean to specify that a boom profile should be create to add a boot entry for the snapshot set and a backup of /boot should be made for rolling back. Default is true.
+Boolean to specify that a boom profile should be created to add a boot entry for the snapshot set and a backup of /boot should be made for rolling back. Default is true.
 
 #### `snapshot_autoextend_threshold`
 
