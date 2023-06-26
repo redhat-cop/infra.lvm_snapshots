@@ -1,0 +1,8 @@
+- name: Remove snapshots
+  community.general.lvol:
+    state: absent
+    vg: "{{ item.vg_name }}"
+    lv: "{{ item.origin }}"
+    snapshot: "{{ item.lv_name }}"
+    force: true
+  loop: "{{ lvm_snapshots_snapshots }}"

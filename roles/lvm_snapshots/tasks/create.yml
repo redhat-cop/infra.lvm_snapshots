@@ -1,0 +1,27 @@
+- name: Update lvm configuration
+  block:
+  - name: Stringify snapshot_autoextend_percent setting
+    ansible.builtin.set_fact:
+      lvm_snapshots_snapshot_autoextend_percent_config: "activation/snapshot_autoextend_percent={{ lvm_snapshots_snapshot_autoextend_percent }}"
+    when: lvm_snapshots_snapshot_autoextend_percent is defined
+  - name: Stringify snapshot_autoextend_threshold setting
+    ansible.builtin.set_fact:
+      lvm_snapshots_snapshot_autoextend_threshold_config: "activation/snapshot_autoextend_threshold={{ lvm_snapshots_snapshot_autoextend_threshold }}"
+    when: lvm_snapshots_snapshot_autoextend_threshold is defined
+  - name: Stringify the new config
+    ansible.builtin.set_fact:
+      lvm_snapshots_new_lvm_config: >
+        {{ lvm_snapshots_snapshot_autoextend_percent_config | default('') }}
+         {{ lvm_snapshots_snapshot_autoextend_threshold_config | default('') }}
+  - name: Set LVM configuration
+    ansible.builtin.command: 'lvmconfig --mergedconfig --config "{{ lvm_snapshots_new_lvm_config }}" --file /etc/lvm/lvm.conf'
+    changed_when: true
+    when: ((lvm_snapshots_new_lvm_config | trim) | length) > 0
+
+- name: Create snapshots
+  community.general.lvol:
+    vg: "{{ item.vg }}"
+    lv: "{{ item.lv }}"
+    snapshot: "{{ item.lv }}_{{ lvm_snapshots_set_name }}"
+    size: "{{ item.size | default(omit) }}"
+  loop: "{{ lvm_snapshots_volumes }}"

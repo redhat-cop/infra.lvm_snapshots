@@ -1,0 +1,38 @@
+- name: Create partition
+  community.general.parted:
+    device: "/dev/{{ device }}"
+    number: 1
+    part_end: 9GiB
+    flags:
+    - lvm
+    state: present
+
+- name: Install lvm2 dependency
+  ansible.builtin.package:
+    name: lvm2
+    state: present
+
+- name: Create the volume group
+  community.general.lvg:
+    vg: "{{ volume_group }}"
+    pvs: "/dev/{{ device }}1"
+    pesize: 16
+
+- name: Create the logical volume
+  community.general.lvol:
+    vg: "{{ volume_group }}"
+    lv: "{{ volume_name }}"
+    size: "{{ volume_size }}"
+    force: true
+
+- name: Format the ext4 filesystem
+  community.general.filesystem:
+    fstype: ext4
+    dev: "/dev/{{ volume_group }}/{{ volume_name }}"
+
+- name: Mount the lv on "{{ test_directory }}"
+  ansible.posix.mount:
+    path: "{{ test_directory }}"
+    src: "/dev/{{ volume_group }}/{{ volume_name }}"
+    fstype: ext4
+    state: mounted

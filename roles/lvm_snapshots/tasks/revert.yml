@@ -1,0 +1,11 @@
+- name: Verify that all snapshots are active
+  ansible.builtin.include_tasks: verify_snapshot_active.yml
+  loop: "{{ lvm_snapshots_snapshots }}"
+
+- name: Revert to snapshots
+  ansible.builtin.command: "lvconvert --merge /dev/{{ item.vg_name }}/{{ item.lv_name }}"
+  loop: "{{ lvm_snapshots_snapshots }}"
+  changed_when: false
+
+- name: Reboot
+  ansible.builtin.reboot:

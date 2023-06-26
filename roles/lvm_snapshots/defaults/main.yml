@@ -1,0 +1,3 @@
+lvm_snapshots_volumes: []
+lvm_snapshots_use_boom: true
+lvm_snapshots_boot_backup: true

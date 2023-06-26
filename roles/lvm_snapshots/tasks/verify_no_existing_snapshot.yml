@@ -1,0 +1,16 @@
+- name: Run lvs
+  ansible.builtin.command: "lvs --select 'vg_name = {{ item.vg }} && origin = {{ item.lv }}' --reportformat json"
+  register: lvm_snapshots_lvs_response
+  changed_when: false
+
+- name: Parse report
+  ansible.builtin.set_fact:
+    lvm_snapshots_lv_snapshot_report_array: "{{ (lvm_snapshots_lvs_response.stdout | from_json).report[0].lv }}"
+
+- name: Verify that the no snapshot exists for the volume
+  ansible.builtin.assert:
+    that: (lvm_snapshots_lv_snapshot_report_array | length) == 0
+    fail_msg: >
+      The volume '{{ item.lv }}' in volume group '{{ item.vg }}'
+      already has at least one snapshot
+      '{{ lvm_snapshots_lv_snapshot_report_array[0].lv_name | default('none') }}'
