@@ -33,9 +33,13 @@ Both the `check` and `create` actions will verify free space and should fail if 
 
 The `revert` action will verify that all snapshots in the set are still active state before doing any merges. This is to prevent rolling back if any snapshots have become invalidated in which case the `revert` action should fail.
 
+#### `boot_backup`
+
+Boolean to specify that the `create` action should preserve image files under /boot required for booting the default kernel. The preserved image files should be restored with a `revert` action and they should be unlinked with a `remove` action. The images files are preserved using hard links so as to not consume any additional space under /boot. Default is true.
+
 #### `use_boom`
 
-Boolean to specify that a boom profile should be created to add a boot entry for the snapshot set and a backup of /boot should be made for rolling back. Default is true.
+Boolean to specify that a boom profile should be created to add a Grub boot entry for the snapshot set. Default is true.
 
 #### `snapshot_autoextend_threshold`
 
@@ -57,7 +61,7 @@ The path in <VG name>/<LV name> format is the origin logical volume for which a 
 
 Specifies the snapshot size as a number of physical extents or any allowed percentage syntax of `lvcreate --extents` command option, for example, `50%ORIGIN`.
 
-__NOTE:__ Each volume listed must have at least one of `extent`, `size`, or `thin: true` variable set. If both `extent` and `size` are given, the setting that results in a larger snapshot size prevails.
+__NOTE:__ Each volume listed must have at least one of `extents`, `size`, or `thin: true` variable set. If both `extents` and `size` are given, the setting that results in a larger snapshot size prevails.
 
 ##### `size`
 
@@ -71,7 +75,7 @@ Boolean to specify that thin provisioning should be used to create the snapshot.
 
 #### Create snapshots
 
-Perform space check and fail of there will not be enough space for all the snapshots in the set. If there is sufficient space, proceed to create snapshots for the listed logical volumes. Each snapshot will be sized to 20% of the origin volume or 4 GiB, whichever is greater. Snapshot autoextend settings are configured to enable free space in the volume group to be allocated to any snapshot that may exceed 70% usage in the future. A boom profile will be created for the snapshot and /boot will be backed up.
+Perform space check and fail of there will not be enough space for all the snapshots in the set. If there is sufficient space, proceed to create snapshots for the listed logical volumes. Each snapshot will be sized to 20% of the origin volume or 4 GiB, whichever is greater. Snapshot autoextend settings are configured to enable free space in the volume group to be allocated to any snapshot that may exceed 70% usage in the future. A boom profile will be created for the snapshot and required images files under /boot will be preserved.
 
 ```yaml
 - hosts: all
@@ -81,6 +85,7 @@ Perform space check and fail of there will not be enough space for all the snaps
       action: create
       snapshot_autoextend_threshold: 70
       snapshot_autoextend_percent: 20
+      boot_backup: true
       use_boom: true
       volumes:
         - path: rootvg/root
@@ -93,7 +98,7 @@ Perform space check and fail of there will not be enough space for all the snaps
 
 #### Rollback
 
-Rollback the host using the snapshots created above. The playbook will merge each snapshot in the snapshot set. The snapshot set boom profile will be deleted and /boot partition restored. Then the host will be rebooted.
+This playbook rolls back the host using the snapshots created above. After verifying that all snapshots are still valid, each logical volume in the snapshot set is merged. The image files under /boot will be restored and the boom profile will be deleted. Then the host will be rebooted.
 
 ```yaml
 - hosts: all
@@ -101,5 +106,20 @@ Rollback the host using the snapshots created above. The playbook will merge eac
     - name: linux-system-roles.snapshot
       snapshot_set_name: ripu
       action: revert
+      boot_backup: true
+      use_boom: true
+```
+
+#### Commit
+
+A commit playbook is used when users are comfortable the snapshots are not needed any longer. Each snapshot in the snapshot set is removed, the preserved image files under /boot are unlinked and the boom profile is deleted.
+
+```yaml
+- hosts: all
+  roles:
+    - name: linux-system-roles.snapshot
+      snapshot_set_name: ripu
+      action: remove
+      boot_backup: true
       use_boom: true
 ```
