@@ -1,0 +1,33 @@
+- name: Unmount the "{{ test_directory }}"
+  ansible.posix.mount:
+    path: "{{ test_directory }}"
+    state: absent
+
+- name: Remove the logical volume
+  community.general.lvol:
+    vg: "{{ volume_group }}"
+    lv: "{{ volume_name }}"
+    force: true
+    state: absent
+
+- name: Remove the volume group
+  community.general.lvg:
+    vg: "{{ volume_group }}"
+    pvs: "/dev/{{ device }}1"
+    state: absent
+
+- name: Remove the PV
+  ansible.builtin.command: "pvremove /dev/{{ device }}1"
+  changed_when: true
+
+- name: Cleanup the system.devices file
+  ansible.builtin.lineinfile:
+    path: /etc/lvm/devices/system.devices
+    regexp: "IDTYPE=devname IDNAME=/dev/{{ device }}1 DEVNAME=/dev/{{ device }}1 PVID=. PART=1"
+    state: absent
+
+- name: Delete the partition
+  community.general.parted:
+    device: "/dev/{{ device }}"
+    number: 1
+    state: absent

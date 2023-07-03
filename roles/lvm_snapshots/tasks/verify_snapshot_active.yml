@@ -1,0 +1,14 @@
+- name: Run lvs
+  ansible.builtin.command: "lvs --select 'lv_name = {{ item.lv_name }}' --reportformat json"
+  register: lvm_snapshots_lvs_response
+  changed_when: false
+
+- name: Parse report
+  ansible.builtin.set_fact:
+    lvm_snapshots_lv_attr: "{{ (lvm_snapshots_lvs_response.stdout | from_json).report[0].lv[0].lv_attr }}"
+
+- name: Verify that the snapshot is active
+  ansible.builtin.assert:
+    that:
+    - lvm_snapshots_lv_attr[0] == 's'
+    - lvm_snapshots_lv_attr[4] == 'a'

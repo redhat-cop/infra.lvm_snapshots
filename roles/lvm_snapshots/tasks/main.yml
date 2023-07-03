@@ -1,0 +1,26 @@
+- name: Check available disk space
+  ansible.builtin.include_tasks: check.yml
+  when: lvm_snapshots_action in ['check', 'create']
+
+- name: Create Snapshot
+  ansible.builtin.include_tasks: create.yml
+  when: lvm_snapshots_action == 'create'
+
+- name: Calculate the list of snapshots
+  when: lvm_snapshots_action in ['revert', 'remove']
+  block:
+  - name: Get list of volumes
+    ansible.builtin.command: "lvs --select 'lv_name =~ {{ lvm_snapshots_set_name }}$ && origin != \"\"' --reportformat json "
+    register: lvm_snapshots_lvs_response
+    changed_when: false
+  - name: Get LV dict List
+    ansible.builtin.set_fact:
+      lvm_snapshots_snapshots: "{{ (lvm_snapshots_lvs_response.stdout | from_json).report[0].lv }}"
+
+- name: Reverting to Snapshot
+  ansible.builtin.include_tasks: revert.yml
+  when: lvm_snapshots_action == 'revert'
+
+- name: Removing the Snapshot
+  ansible.builtin.include_tasks: remove.yml
+  when: lvm_snapshots_action == 'remove'

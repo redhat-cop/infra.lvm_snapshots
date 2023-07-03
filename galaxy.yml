@@ -1,0 +1,33 @@
+---
+namespace: swapdisk
+name: snapshots
+version: 1.0.0
+readme: README.md
+authors:
+- Ygal Blum <yblum@redhat.com>
+- Bob Mader <bob@redhat.com>
+description: LVM Snapshot Linux Role
+license:
+- MIT
+license_file: LICENSE
+tags:
+- ansible
+- lvm
+- storage
+dependencies:
+  "community.general": "*"
+repository: https://github.com/swapdisk/snapshot
+documentation: https://github.com/swapdisk/snapshot
+homepage: https://github.com/swapdisk/snapshot
+issues: https://github.com/swapdisk/snapshot/issues
+build_ignore:
+- .ansible-lint
+- .pylintrc
+- .yamllint
+- .git
+- .gitignore
+- ansible.cfg
+- requirements.yml
+- tests
+- vendor
+...

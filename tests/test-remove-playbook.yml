@@ -1,0 +1,31 @@
+- name: Demo playbook
+  hosts: all
+  become: true
+  vars:
+    volume_group: test_vg
+    volume_name: test_lv
+    volume_size: 1g
+    test_directory: "/mnt/test"
+    test_file: "{{ mount_path }}/foo.txt"
+    snapshot_set_name: demo_snap
+    lvm_snapshots_snapshot_autoextend_threshold: 80
+    lvm_snapshots_snapshot_autoextend_percent: 15
+  tasks:
+  - name: Run pre-test steps
+    ansible.builtin.include_tasks: pre-test-tasks.yml
+
+  - name: Create the snapshot
+    ansible.builtin.include_tasks: create-snapshot.yml
+
+  - name: Remove Snapshot
+    vars:
+      lvm_snapshots_action: remove
+      lvm_snapshots_set_name: "{{ snapshot_set_name }}"
+    ansible.builtin.include_role:
+      name: lvm_snapshots
+
+  - name: Verify that the snapshot no longer exist
+    ansible.builtin.include_tasks: verify-snapshot-not-exist.yml
+
+  - name: Cleanup
+    ansible.builtin.include_tasks: post-test-tasks.yml

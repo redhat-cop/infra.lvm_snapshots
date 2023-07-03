@@ -1,0 +1,78 @@
+[MESSAGES CONTROL]
+disable=
+# "F" Fatal errors that prevent further processing
+# import-error,
+# "I" Informational noise
+# "E" Error for important programming issues (likely bugs)
+# no-member,
+# no-name-in-module,
+# raising-bad-type,
+# "W" Warnings for stylistic problems or minor programming issues
+# no-absolute-import,
+# arguments-differ,
+# cell-var-from-loop,
+# fixme,
+;  lost-exception,
+;  no-init,
+;  pointless-string-statement,
+;  protected-access,
+;  redefined-outer-name,
+;  relative-import,
+;  undefined-loop-variable,
+;  unsubscriptable-object,
+# unused-argument,
+;  unused-import,
+;  unspecified-encoding,
+# "C" Coding convention violations
+;  bad-continuation,
+;  missing-docstring,
+;  wrong-import-order,
+;  use-maxsplit-arg,
+;  consider-using-dict-items,
+;  consider-using-enumerate,
+# "R" Refactor recommendations
+;  duplicate-code,
+;  no-self-use,
+;  too-few-public-methods,
+;  too-many-branches,
+;  too-many-locals,
+;  too-many-statements,
+;  consider-using-from-import,
+;  use-list-literal,
+;  use-dict-literal,
+# new for python3 version of pylint
+;  useless-object-inheritance,
+;  consider-using-set-comprehension,  # pylint3 force to use comprehension in place we don't want (py2 doesn't have these options, for inline skip)
+;  unnecessary-pass,
+;  invalid-envvar-default,  # pylint3 warnings envvar returns str/none by default
+;  bad-option-value,  # python 2 doesn't have import-outside-toplevel, but in some case we need to import outside toplevel
+;  super-with-arguments,  # required in python 2
+;  raise-missing-from,  # no 'raise from' in python 2
+;  use-a-generator,  # cannot be modified because of Python2 support
+;  consider-using-with,  # on bunch spaces we cannot change that...
+;  duplicate-string-formatting-argument,  # TMP: will be fixed in close future
+ consider-using-f-string,  # sorry, not gonna happen, still have to support py2
+;  use-dict-literal
+
+[FORMAT]
+# Maximum number of characters on a single line.
+max-line-length=120
+
+[DESIGN]
+max-args=11  # 2x + 1 from default
+max-attributes=21  # 4x + 1 from default
+
+[REPORTS]
+msg-template='[{msg_id} {symbol}] {msg} File: {path}, line {line}, in {obj}'
+
+[BASIC]
+# In order to make a check more strict add proper regex http://pylint-messages.wikidot.com/messages:c0103
+argument-rgx=.*
+attr-rgx=.*
+class-rgx=.*
+const-rgx=.*
+function-rgx=.*
+method-rgx=.*
+module-rgx=.*
+variable-rgx=.*
+inlinevar-rgx=.*
