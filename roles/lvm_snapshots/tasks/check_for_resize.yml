@@ -1,0 +1,35 @@
+- name: Verify that all volumes exist
+  ansible.builtin.include_tasks: verify_volume_exists.yml
+  loop: "{{ lvm_snapshots_volumes }}"
+
+- name: Verify that there is enough storage space
+  ansible.builtin.script: check.py resize '{{ lvm_snapshots_volumes | to_json }}'
+  args:
+    executable: python3
+  register: lvm_snapshots_check_resize_status
+  failed_when: false
+  changed_when: false
+
+- name: Check the results
+  when: lvm_snapshots_check_resize_status.rc != 0
+  block:
+  - name: Store check return in case of failure
+    ansible.builtin.set_fact:
+      lvm_snapshots_check_resize_failure_json: "{{ lvm_snapshots_check_resize_status.stdout | from_json }}"
+  - name: Check if not enough space in the volume groups
+    ansible.builtin.debug:
+      msg: Not enough space in the Volume Groups to create the requested snapshots
+    when: lvm_snapshots_check_resize_status.rc == 1
+  - name: Check if unsupporting file system
+    ansible.builtin.debug:
+      msg: Some mounted volumes are formatted in an unsupported file system type
+    when: lvm_snapshots_check_resize_status.rc == 2
+  - name: Check if target size if too small
+    ansible.builtin.debug:
+      msg: For some volumes the used size if bigger than the new size
+    when: lvm_snapshots_check_resize_status.rc == 3
+
+- name: Assert results
+  ansible.builtin.assert:
+    that: lvm_snapshots_check_resize_status.rc == 0
+    success_msg: All resize checks passed

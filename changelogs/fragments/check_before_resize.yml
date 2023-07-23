@@ -1,0 +1,2 @@
+minor_changes:
+  - Add support for cheking before resizing logical volumes

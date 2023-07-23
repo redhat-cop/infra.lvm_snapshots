@@ -7,7 +7,7 @@
   loop: "{{ lvm_snapshots_volumes }}"
 
 - name: Verify that there is enough storage space
-  ansible.builtin.script: check.py '{{ lvm_snapshots_volumes | to_json }}'
+  ansible.builtin.script: check.py snapshots '{{ lvm_snapshots_volumes | to_json }}'
   args:
     executable: python3
   register: lvm_snapshots_check_status
