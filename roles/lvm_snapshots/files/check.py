@@ -139,8 +139,8 @@ def _calc_requested_size(group_info, volume):
             try:
                 size = int(requested_size[:-1])
                 unit = requested_size[-1].lower()
-            except ValueError as exc:
-                raise CheckException('Failed to read requested size {size}'.format(size=requested_size)) from exc
+            except ValueError:
+                raise CheckException('Failed to read requested size {size}'.format(size=requested_size))
     return _convert_to_bytes(size, unit)
 
 
