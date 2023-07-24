@@ -5,7 +5,7 @@
 - name: Verify that there is enough storage space
   ansible.builtin.script: check.py resize '{{ lvm_snapshots_volumes | to_json }}'
   args:
-    executable: python3
+    executable: "{{ ansible_python.executable }}"
   register: lvm_snapshots_check_resize_status
   failed_when: false
   changed_when: false
