@@ -1,3 +1,7 @@
+- name: Check before resize
+  ansible.builtin.include_tasks: check_for_resize.yml
+  when: lvm_snapshots_action in ['check_for_resize', 'resize']
+
 - name: Check available disk space
   ansible.builtin.include_tasks: check.yml
   when: lvm_snapshots_action in ['check', 'create']
