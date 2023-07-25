@@ -102,7 +102,7 @@ def _check_requested_size(groups_info, group_field):
 
 
 def _get_group_info(group):
-    group_info_str = subprocess.check_output([_VGS_COMMAND, group, '-v', '--reportformat', 'json'])
+    group_info_str = subprocess.check_output([_VGS_COMMAND, group, '-v', '--units', 'b', '--reportformat', 'json'])
     group_info_json = json.loads(group_info_str)
     group_info = group_info_json['report'][0]['vg'][0]
     return {
@@ -114,7 +114,7 @@ def _get_group_info(group):
 
 
 def _calc_requested_size(group_info, volume):
-    unit = 'm'
+    unit = 'b'
     requested_size = volume.get('size', 0)
     if requested_size == 0:
         # handle thin provisioning
@@ -124,7 +124,7 @@ def _calc_requested_size(group_info, volume):
     else:
         parts = requested_size.split('%')
         if len(parts) == 2:
-            percent = parts[0]
+            percent = float(parts[0])
             percent_of = parts[1]
             if percent_of == 'VG':
                 size = group_info['size'] * percent / 100
@@ -146,7 +146,7 @@ def _calc_requested_size(group_info, volume):
 
 def _get_volume_size(vol):
     volume_info_str = subprocess.check_output(
-        [_LVS_COMMAND, "{vg}/{lv}".format(vg=vol['vg'],lv=vol['lv']), '-v', '--reportformat', 'json']
+        [_LVS_COMMAND, "{vg}/{lv}".format(vg=vol['vg'],lv=vol['lv']), '-v', '--units', 'b', '--reportformat', 'json']
     )
     volume_info_json = json.loads(volume_info_str)
     volume_info = volume_info_json['report'][0]['lv'][0]
