@@ -73,12 +73,12 @@ To create thin provisioned snapshot of a thin provisioned volume, omit the `size
 
 #### Create snapshots
 
-Perform space check and fail of there will not be enough space for all the snapshots in the set. If there is sufficient space, proceed to create snapshots for the listed logical volumes. Each snapshot will be sized to 20% of the origin volume or 4 GiB, whichever is greater. Snapshot autoextend settings are configured to enable free space in the volume group to be allocated to any snapshot that may exceed 70% usage in the future. A boom profile will be created for the snapshot and required images files under /boot will be preserved.
+Perform space check and fail of there will not be enough space for all the snapshots in the set. If there is sufficient space, proceed to create snapshots for the listed logical volumes. Each snapshot will be sized to 20% of the origin volume size. Snapshot autoextend settings are configured to enable free space in the volume group to be allocated to any snapshot that may exceed 70% usage in the future. A boom profile will be created for the snapshot and required images files under /boot will be preserved.
 
 ```yaml
 - hosts: all
   roles:
-    - name: linux-system-roles.snapshot
+    - name: lvm_snapshots
       lvm_snapshots_set_name: ripu
       lvm_snapshots_action: create
       lvm_snapshots_snapshot_autoextend_threshold: 70
@@ -88,10 +88,10 @@ Perform space check and fail of there will not be enough space for all the snaps
       lvm_snapshots_volumes:
         - vg: rootvg
           lv: root
-          extents: 20%ORIGIN
+          size: 20%ORIGIN
         - vg: rootvg
           lv: var
-          extents: 20%ORIGIN
+          size: 20%ORIGIN
 ```
 
 #### Rollback
@@ -101,7 +101,7 @@ This playbook rolls back the host using the snapshots created above. After verif
 ```yaml
 - hosts: all
   roles:
-    - name: linux-system-roles.snapshot
+    - name: lvm_snapshots
       lvm_snapshots_set_name: ripu
       lvm_snapshots_action: revert
       lvm_snapshots_boot_backup: true
@@ -115,7 +115,7 @@ A commit playbook is used when users are comfortable the snapshots are not neede
 ```yaml
 - hosts: all
   roles:
-    - name: linux-system-roles.snapshot
+    - name: lvm_snapshots
       lvm_snapshots_set_name: ripu
       lvm_snapshots_action: remove
       lvm_snapshots_boot_backup: true
