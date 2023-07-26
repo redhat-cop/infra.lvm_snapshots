@@ -114,7 +114,7 @@ def _get_group_info(group):
 
 
 def _calc_requested_size(group_info, volume):
-    unit = 'b'
+    unit = 'm'
     requested_size = volume.get('size', 0)
     if requested_size == 0:
         # handle thin provisioning
@@ -124,6 +124,7 @@ def _calc_requested_size(group_info, volume):
     else:
         parts = requested_size.split('%')
         if len(parts) == 2:
+            unit = 'b'
             percent = float(parts[0])
             percent_of = parts[1]
             if percent_of == 'VG':
