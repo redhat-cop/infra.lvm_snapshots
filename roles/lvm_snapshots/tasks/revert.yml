@@ -2,6 +2,13 @@
   ansible.builtin.include_tasks: verify_snapshot_active.yml
   loop: "{{ lvm_snapshots_snapshots }}"
 
+- name: Restore boot backup
+  ansible.builtin.unarchive:
+    remote_src: true
+    src: "/root/boot-backup-{{ lvm_snapshots_set_name }}.tgz"
+    dest: /boot
+  when: lvm_snapshots_boot_backup
+
 - name: Revert to snapshots
   ansible.builtin.command: "lvconvert --merge /dev/{{ item.vg_name }}/{{ item.lv_name }}"
   loop: "{{ lvm_snapshots_snapshots }}"

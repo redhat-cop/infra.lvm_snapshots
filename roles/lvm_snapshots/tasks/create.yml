@@ -25,3 +25,18 @@
     snapshot: "{{ item.lv }}_{{ lvm_snapshots_set_name }}"
     size: "{{ item.size | default(omit) }}"
   loop: "{{ lvm_snapshots_volumes }}"
+
+- name: Create boot backup
+  community.general.archive:
+    format: gz
+    dest: "/root/boot-backup-{{ lvm_snapshots_set_name }}.tgz"
+    path:
+    - "/boot/initramfs-{{ ansible_kernel }}.img"
+    - "/boot/vmlinuz-{{ ansible_kernel }}"
+    - "/boot/System.map-{{ ansible_kernel }}"
+    - "/boot/symvers-{{ ansible_kernel }}.gz"
+    - "/boot/config-{{ ansible_kernel }}"
+    - /boot/grub/grub.conf
+    - /boot/grub2/grub.cfg
+    - /boot/efi/EFI/redhat/grub.cfg
+  when: lvm_snapshots_boot_backup
