@@ -6,3 +6,8 @@
     snapshot: "{{ item.lv_name }}"
     force: true
   loop: "{{ lvm_snapshots_snapshots }}"
+
+- name: Remove boot backup
+  ansible.builtin.file:
+    path: "/root/boot-backup-{{ lvm_snapshots_set_name }}.tgz"
+    state: absent
