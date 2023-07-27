@@ -29,6 +29,7 @@
 - name: Create boot backup
   community.general.archive:
     format: gz
+    mode: '0644'
     dest: "/root/boot-backup-{{ lvm_snapshots_set_name }}.tgz"
     path:
     - "/boot/initramfs-{{ ansible_kernel }}.img"
