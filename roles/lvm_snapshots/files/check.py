@@ -119,7 +119,7 @@ def _calc_requested_size(group_info, volume):
     if requested_size == 0:
         # handle thin provisioning
         pass
-    if isinstance(requested_size, int):
+    if isinstance(requested_size, int) or isinstance(requested_size, float):
         size = requested_size
     else:
         parts = requested_size.split('%')
@@ -138,7 +138,7 @@ def _calc_requested_size(group_info, volume):
                 raise CheckException("Unsupported base type {base_type}".format(base_type=percent_of))
         else:
             try:
-                size = int(requested_size[:-1])
+                size = float(requested_size[:-1])
                 unit = requested_size[-1].lower()
             except ValueError:
                 raise CheckException('Failed to read requested size {size}'.format(size=requested_size))
