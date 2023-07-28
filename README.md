@@ -1,14 +1,12 @@
-# Snapshot Linux Role
-
-__High-level design and requirements to support use case with the RHEL In-place Upgrade automation__
+# lvm_snapshots role
 
 ## Overview
 
 A reliable snapshot/rollback capability is a key feature required to enable the success of RHEL In-place Upgrade automation solutions. Without it, users will be wary of using the solution because of the potential risk that their applications may not function properly after the OS upgrade. Including automation so that snapshot creation happens right before the OS upgrade reduces this risk. If there are any application issues uncovered after the OS upgrade, a rollback playbook can be executed to instantly revert the environment back to the original state as it was before the upgrade. Application teams will no longer have an excuse not to use in-place upgrades to bring their RHEL estate into compliance.
 
-## Proposed Design
+The `lvm_snapshots` role is designed to support automation of this use case, but can also be used for other system maintenance activities. 
 
-The proposed design will implement a new `snapshot` Linux Role. The role will accept variables used to control creation/rollback and specify the size of a set of LVM snapshot volumes.
+The role accepts variables used to control creation/rollback actions and to specify the size of a set of LVM snapshot volumes.
 
 ### Role Variables
 
@@ -35,11 +33,15 @@ The `revert` action will verify that all snapshots in the set are still active s
 
 #### `lvm_snapshots_boot_backup`
 
-Boolean to specify that the `create` action should preserve image files under /boot required for booting the default kernel. The preserved image files should be restored with a `revert` action and they should be unlinked with a `remove` action. The images files are preserved using hard links so as to not consume any additional space under /boot. Default is true.
+Boolean to specify that the `create` action should preserve the Grub configuration and image files under /boot required for booting the default kernel. The preserved files will be restored with a `revert` action and they will be deleted with a `remove` action. The files are preserved in a compressed tar archive at `/root/boot-backup-<lvm_snapshots_set_name>.tgz`. Default is true.
+
+> **Warning**
+>
+> When automating RHEL in-place upgrades, do not perform a Grub to Grub2 migration as part of your upgrade playbook. It will invalidate your boot backup and cause a subsequent `revert` action to fail. For example, if you are using the [`upgrade`](https://github.com/redhat-cop/infra.leapp/tree/main/roles/upgrade#readme) role from the [`infra.leapp`](https://github.com/redhat-cop/infra.leapp) collection, do not set `update_grub_to_grub_2` to `true`. Grub to Grub2 migration should only be performed after the `remove` action has been performed to delete the snapshots and boot backup.
 
 #### `lvm_snapshots_use_boom`
 
-Boolean to specify that a boom profile should be created to add a Grub boot entry for the snapshot set. Default is true.
+Boolean to specify that a boom profile will be created to add a Grub boot entry for the snapshot set. Default is true.
 
 #### `lvm_snapshots_snapshot_autoextend_threshold`
 
@@ -55,11 +57,11 @@ This is the list of logical volumes for which snapshots are to be created and th
 
 #### `vg`
 
-The volume group of the origin logical volume for which a snapshot should be created.
+The volume group of the origin logical volume for which a snapshot will be created.
 
 #### `lv`
 
-The origin logical volume for which a snapshot should be created.
+The origin logical volume for which a snapshot will be created.
 
 #### `size`
 
