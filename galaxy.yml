@@ -7,8 +7,6 @@ authors:
 - Ygal Blum <yblum@redhat.com>
 - Bob Mader <bob@redhat.com>
 description: Ansible role for creating and rolling back LVM snapshots
-license:
-- MIT
 license_file: LICENSE
 tags:
 - ansible
