@@ -1,12 +1,12 @@
 ---
-namespace: swapdisk
-name: snapshots
+namespace: infra
+name: lvm_snapshots
 version: 1.0.0
 readme: README.md
 authors:
 - Ygal Blum <yblum@redhat.com>
 - Bob Mader <bob@redhat.com>
-description: LVM Snapshot Linux Role
+description: Ansible role for creating and rolling back LVM snapshots
 license:
 - MIT
 license_file: LICENSE
@@ -16,10 +16,10 @@ tags:
 - storage
 dependencies:
   "community.general": "*"
-repository: https://github.com/swapdisk/snapshot
-documentation: https://github.com/swapdisk/snapshot
-homepage: https://github.com/swapdisk/snapshot
-issues: https://github.com/swapdisk/snapshot/issues
+repository: https://github.com/swapdisk/lvm_snapshots
+documentation: https://github.com/swapdisk/lvm_snapshots
+homepage: https://github.com/swapdisk/lvm_snapshots
+issues: https://github.com/swapdisk/lvm_snapshots/issues
 build_ignore:
 - .ansible-lint
 - .pylintrc
