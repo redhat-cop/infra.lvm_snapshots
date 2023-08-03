@@ -27,6 +27,6 @@ sections:
   - Bugfixes
 - - known_issues
   - Known Issues
-title: Swapdisk.Snapshots
+title: LVM Snapshot Linux Role
 trivial_section_name: trivial
 use_fqcn: true
