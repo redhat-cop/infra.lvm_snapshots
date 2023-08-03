@@ -19,8 +19,8 @@ jobs:
     steps:
       - run: >-
           python -c "assert set([
-          '${{ needs.pre-commit.result }}',
-          '${{ needs.sanity.result }}',
+          '${{ needs.ansible-lint.result }}',
+          '${{ needs.pylint.result }}',
           ]) == {'success'}"
   infra_release:
     needs:
