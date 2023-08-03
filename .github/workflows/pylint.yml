@@ -2,6 +2,7 @@ name: PyLint
 on:
 - push
 - pull_request
+- workflow_call
 
 jobs:
   python-3:
