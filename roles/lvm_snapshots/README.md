@@ -1,8 +1,9 @@
 # lvm_snapshots role
 
-The `lvm_snapshots` role is designed to support automation of this use case, but can also be used for other system maintenance activities. 
 
-The role accepts variables used to control creation/rollback actions and to specify the size of a set of LVM snapshot volumes.
+The `lvm_snapshots` role is used to control the creation and rollback for a defined set of LVM snapshot volumes. In addition, it can optionally save the Grub configuration and image files under /boot, create a snapshot boom entry, and configure settings to enable the LVM snapshot autoextend capability.
+
+The role is designed to support the automation of RHEL in-place upgrades, but can also be used to reduce the risk of more mundane system maintenance activities.
 
 ## Role Variables
 
