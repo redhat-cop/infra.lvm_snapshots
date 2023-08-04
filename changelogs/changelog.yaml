@@ -2,3 +2,15 @@ ancestor: null
 releases:
   1.0.0:
     release_date: '2023-08-03'
+  1.0.1:
+    changes:
+      major_changes:
+      - Initial MVP release
+      minor_changes:
+      - Add boot backup support
+      - Add support for checking before resizing logical volumes
+    fragments:
+    - boot_backup.yml
+    - check_before_resize.yml
+    - release.yml
+    release_date: '2023-08-04'
