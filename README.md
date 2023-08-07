@@ -46,7 +46,7 @@ See [Using Ansible collections](https://docs.ansible.com/ansible/devel/user_guid
 
 ## Contributing
 
-We apriciate participation from any new contributors. Get started by opening an issue or pull request. Refer to our [contribution guide](CONTRIBUTING.md) for more information.
+We appreciate participation from any new contributors. Get started by opening an issue or pull request. Refer to our [contribution guide](CONTRIBUTING.md) for more information.
 
 ## Reporting issues
 
