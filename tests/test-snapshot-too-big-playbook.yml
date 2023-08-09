@@ -1,12 +1,12 @@
-- name: Demo playbook
+- name: Test trying to create to big a snapshot
   hosts: all
   become: true
   vars:
     volume_group: test_vg
-    volume_name: test_lv
-    volume_size: 8g
-    test_directory: "/mnt/test"
-    test_file: "{{ mount_path }}/foo.txt"
+    volumes:
+    - name: test_lv
+      size: 8g
+      directory: /mnt/test
     snapshot_set_name: demo_snap
     lvm_snapshots_snapshot_autoextend_threshold: 80
     lvm_snapshots_snapshot_autoextend_percent: 15
@@ -20,6 +20,8 @@
       ansible.builtin.include_tasks: create-snapshot.yml
     always:
     - name: Verify that the snapshot does not exist
+      vars:
+        volume_name: test_lv
       ansible.builtin.include_tasks: verify-snapshot-not-exist.yml
     - name: Cleanup
       ansible.builtin.include_tasks: post-test-tasks.yml
@@ -32,6 +34,6 @@
         that:
         - lvm_snapshots_check_failure_json is defined
         - lvm_snapshots_check_failure_json.test_vg
-        - lvm_snapshots_check_failure_json.test_vg.size == 9642201579.52
-        - lvm_snapshots_check_failure_json.test_vg.free == 1056964608.0
+        - lvm_snapshots_check_failure_json.test_vg.size == 9646899200
+        - lvm_snapshots_check_failure_json.test_vg.free == 1056964608
         - lvm_snapshots_check_failure_json.test_vg.requested_size == 8589934592

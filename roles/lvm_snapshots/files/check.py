@@ -57,6 +57,15 @@ def _main():
 
     if args.that == 'snapshots':
         exit_code = _check_free_size_for_snapshots(groups_info)
+        if exit_code == _EXIT_CODE_SUCCESS:
+            norm_vols = [
+                {
+                    'vg': vol['vg'],
+                    'lv': vol['lv'],
+                    'size': "{size}B".format(size=vol['normalized_size'])
+                } for vol in volumes
+            ]
+            print(json.dumps(norm_vols))
     if args.that == 'resize':
         exit_code = _check_free_size_for_resize(volumes, groups_info)
 
@@ -109,6 +118,7 @@ def _get_group_info(group):
         'name': group,
         'size': _get_size_from_report(group_info['vg_size']),
         'free': _get_size_from_report(group_info['vg_free']),
+        'extent_size': _get_size_from_report(group_info['vg_extent_size']),
         'requested_size': 0
     }
 
@@ -142,7 +152,7 @@ def _calc_requested_size(group_info, volume):
                 unit = requested_size[-1].lower()
             except ValueError:
                 raise CheckException('Failed to read requested size {size}'.format(size=requested_size))
-    return _convert_to_bytes(size, unit)
+    return _align_to_extent(_convert_to_bytes(size, unit), group_info['extent_size'])
 
 
 def _get_volume_size(vol):
@@ -164,6 +174,10 @@ def _get_size_from_report(reported_size):
         size = float(reported_size[:-1])
         unit = reported_size[-1].lower()
     return _convert_to_bytes(size, unit)
+
+
+def _align_to_extent(size, extent_size):
+    return math.ceil(size / extent_size) * extent_size
 
 
 def _calc_filesystem_size(mtab_entry):

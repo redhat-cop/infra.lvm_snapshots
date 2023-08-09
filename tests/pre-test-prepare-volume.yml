@@ -1,0 +1,18 @@
+- name: Create the logical volume
+  community.general.lvol:
+    vg: "{{ volume_group }}"
+    lv: "{{ item.name }}"
+    size: "{{ item.size }}"
+    force: true
+
+- name: Format the ext4 filesystem
+  community.general.filesystem:
+    fstype: ext4
+    dev: "/dev/{{ volume_group }}/{{ item.name }}"
+
+- name: Mount the lv on "{{ item.directory }}"
+  ansible.posix.mount:
+    path: "{{ item.directory }}"
+    src: "/dev/{{ volume_group }}/{{ item.name }}"
+    fstype: ext4
+    state: mounted

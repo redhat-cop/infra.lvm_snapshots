@@ -1,33 +1,16 @@
+- name: Generate snapshot list out of volumes list
+  ansible.builtin.set_fact:
+    _snapshots: "{{ (_snapshots | default([])) + [{'vg': volume_group, 'lv': item.name, 'size': item.size}] }}"
+  loop: "{{ volumes }}"
+
 - name: Create the snapshot
   vars:
     lvm_snapshots_action: create
-    lvm_snapshots_volumes:
-    - vg: "{{ volume_group }}"
-      lv: "{{ volume_name }}"
-      size: "{{ volume_size }}"
+    lvm_snapshots_volumes: "{{ _snapshots }}"
     lvm_snapshots_set_name: "{{ snapshot_set_name }}"
   ansible.builtin.include_role:
     name: lvm_snapshots
 
 - name: Verify that the snapshot was created
-  block:
-  - name: Run lvs
-    ansible.builtin.command: lvs --select 'vg_name = {{ volume_group }} && origin = {{ volume_name }}' --reportformat json
-    register: lvs_response
-    changed_when: false
-  - name: Parse report
-    ansible.builtin.set_fact:
-      lv_snapshot_array: "{{ (lvs_response.stdout | from_json).report[0].lv }}"
-  - name: Verify that the the snapshot exists
-    ansible.builtin.assert:
-      that: (lv_snapshot_array | length) == 1
-      fail_msg: >
-        The snapshot volume was not created
-  - name: Get the snapshot name
-    ansible.builtin.set_fact:
-      snapshot_name: "{{ lv_snapshot_array[0].lv_name | default('n/a') }}"
-  - name: Verify that the the snapshot was named correctly
-    ansible.builtin.assert:
-      that: snapshot_name == volume_name + '_' + snapshot_set_name
-      fail_msg: >
-        Snapshot name '{{ snapshot_name }}' is not as expected {{ volume_name }}_{{ snapshot_set_name }}
+  ansible.builtin.include_tasks: verify-snapshot-created.yml
+  loop: "{{ volumes }}"

@@ -1,11 +1,13 @@
-- name: Demo playbook
+- name: Test trying to resize the volume to a size smaller than what the filesystem uses
   hosts: all
   become: true
   vars:
     volume_group: test_vg
-    volume_name: test_lv
-    volume_size: 4g
     test_directory: "/mnt/test"
+    volumes:
+    - name: test_lv
+      size: 4g
+      directory: "{{ test_directory }}"
     test_file_path: "{{ test_directory }}/foo.txt"
     test_file_size: 2g
   tasks:
@@ -24,7 +26,7 @@
         lvm_snapshots_action: check_for_resize
         lvm_snapshots_volumes:
         - vg: "{{ volume_group }}"
-          lv: "{{ volume_name }}"
+          lv: test_lv
           size: 1g
       ansible.builtin.include_role:
         name: lvm_snapshots

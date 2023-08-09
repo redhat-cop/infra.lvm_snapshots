@@ -1,12 +1,12 @@
-- name: Demo playbook
+- name: Test removing snapshots after creating them
   hosts: all
   become: true
   vars:
     volume_group: test_vg
-    volume_name: test_lv
-    volume_size: 1g
-    test_directory: "/mnt/test"
-    test_file: "{{ mount_path }}/foo.txt"
+    volumes:
+    - name: test_lv
+      size: 1g
+      directory: /mnt/test
     snapshot_set_name: demo_snap
     lvm_snapshots_snapshot_autoextend_threshold: 80
     lvm_snapshots_snapshot_autoextend_percent: 15
@@ -25,6 +25,8 @@
       name: lvm_snapshots
 
   - name: Verify that the snapshot no longer exist
+    vars:
+      volume_name: test_lv
     ansible.builtin.include_tasks: verify-snapshot-not-exist.yml
 
   - name: Cleanup

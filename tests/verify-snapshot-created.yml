@@ -1,0 +1,24 @@
+- name: Run lvs
+  ansible.builtin.command: lvs --select 'vg_name = {{ volume_group }} && origin = {{ item.name }}' --reportformat json
+  register: lvs_response
+  changed_when: false
+
+- name: Parse report
+  ansible.builtin.set_fact:
+    lv_snapshot_array: "{{ (lvs_response.stdout | from_json).report[0].lv }}"
+
+- name: Verify that the the snapshot exists
+  ansible.builtin.assert:
+    that: (lv_snapshot_array | length) == 1
+    fail_msg: >
+      The snapshot for {{ item.name }} was not created
+
+- name: Get the snapshot name
+  ansible.builtin.set_fact:
+    snapshot_name: "{{ lv_snapshot_array[0].lv_name | default('n/a') }}"
+
+- name: Verify that the the snapshot was named correctly
+  ansible.builtin.assert:
+    that: snapshot_name == item.name + '_' + snapshot_set_name
+    fail_msg: >
+      Snapshot name '{{ snapshot_name }}' is not as expected {{ item.name }}_{{ snapshot_set_name }}

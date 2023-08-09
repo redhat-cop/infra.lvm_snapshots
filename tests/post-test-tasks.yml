@@ -1,14 +1,6 @@
-- name: Unmount the "{{ test_directory }}"
-  ansible.posix.mount:
-    path: "{{ test_directory }}"
-    state: absent
-
-- name: Remove the logical volume
-  community.general.lvol:
-    vg: "{{ volume_group }}"
-    lv: "{{ volume_name }}"
-    force: true
-    state: absent
+- name: Cleanup the volumes
+  ansible.builtin.include_tasks: post-test-clean-volume.yml
+  loop: "{{ volumes }}"
 
 - name: Remove the volume group
   community.general.lvg:
