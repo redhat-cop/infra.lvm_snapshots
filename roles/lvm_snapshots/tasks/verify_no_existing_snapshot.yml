@@ -1,5 +1,10 @@
 - name: Run lvs
-  ansible.builtin.command: "lvs --select 'vg_name = {{ item.vg }} && origin = {{ item.lv }}' --reportformat json"
+  ansible.builtin.command: >
+    lvs
+    --select 'vg_name = {{ item.vg }}
+    && origin = {{ item.lv }}
+    && lv_name = {{ item.lv }}_{{ lvm_snapshots_set_name }}'
+    --reportformat json
   register: lvm_snapshots_lvs_response
   changed_when: false
 
