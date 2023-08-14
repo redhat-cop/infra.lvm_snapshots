@@ -18,21 +18,6 @@
     pvs: "/dev/{{ device }}1"
     pesize: 16
 
-- name: Create the logical volume
-  community.general.lvol:
-    vg: "{{ volume_group }}"
-    lv: "{{ volume_name }}"
-    size: "{{ volume_size }}"
-    force: true
-
-- name: Format the ext4 filesystem
-  community.general.filesystem:
-    fstype: ext4
-    dev: "/dev/{{ volume_group }}/{{ volume_name }}"
-
-- name: Mount the lv on "{{ test_directory }}"
-  ansible.posix.mount:
-    path: "{{ test_directory }}"
-    src: "/dev/{{ volume_group }}/{{ volume_name }}"
-    fstype: ext4
-    state: mounted
+- name: Create and prepare the volumes
+  ansible.builtin.include_tasks: pre-test-prepare-volume.yml
+  loop: "{{ volumes }}"

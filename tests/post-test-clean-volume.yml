@@ -1,0 +1,11 @@
+- name: Unmount the "{{ item.directory }}"
+  ansible.posix.mount:
+    path: "{{ item.directory }}"
+    state: absent
+
+- name: Remove the logical volume
+  community.general.lvol:
+    vg: "{{ volume_group }}"
+    lv: "{{ item.name }}"
+    force: true
+    state: absent

@@ -1,11 +1,13 @@
-- name: Demo playbook
+- name: Test revering to the snapshots
   hosts: all
   become: true
   vars:
     volume_group: test_vg
-    volume_name: test_lv
-    volume_size: 1g
     test_directory: "/mnt/test"
+    volumes:
+    - name: test_lv
+      size: 1g
+      directory: "{{ test_directory }}"
     test_file: "{{ test_directory }}/foo.txt"
     snapshot_set_name: demo_snap
   tasks:
@@ -54,6 +56,8 @@
       failed_when: ls_response.rc == 0
 
   - name: Verify that the snapshot no longer exists
+    vars:
+      volume_name: test_lv
     ansible.builtin.include_tasks: verify-snapshot-not-exist.yml
 
   - name: Cleanup
