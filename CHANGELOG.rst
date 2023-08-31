@@ -5,6 +5,19 @@ LVM Snapshot Linux Role Release Notes
 .. contents:: Topics
 
 
+v1.0.2
+======
+
+Minor Changes
+-------------
+
+- Create snapshots with normalized sizes
+
+Bugfixes
+--------
+
+- Existing Snapshots with Different Name Cause verify_no_existing_snapshot.yml to Fail
+
 v1.0.1
 ======
 

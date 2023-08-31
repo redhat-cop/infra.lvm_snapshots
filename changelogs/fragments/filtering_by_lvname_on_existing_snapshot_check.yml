@@ -1,4 +1,0 @@
----
-bugfixes:
-  - Existing Snapshots with Different Name Cause verify_no_existing_snapshot.yml to Fail
-...

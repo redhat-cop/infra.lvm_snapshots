@@ -14,3 +14,14 @@ releases:
     - check_before_resize.yml
     - release.yml
     release_date: '2023-08-04'
+  1.0.2:
+    changes:
+      bugfixes:
+      - Existing Snapshots with Different Name Cause verify_no_existing_snapshot.yml
+        to Fail
+      minor_changes:
+      - Create snapshots with normalized sizes
+    fragments:
+    - create_snapshots_with_normalized_sizes.yml
+    - filtering_by_lvname_on_existing_snapshot_check.yml
+    release_date: '2023-08-31'
