@@ -1,0 +1,53 @@
+- name: Test revering to the snapshots
+  hosts: all
+  become: true
+  vars:
+    volume_group: test_vg
+    test_directory: "/mnt/test"
+    volume_name: test_lv
+    volumes:
+    - name: "{{ volume_name }}"
+      size: 4g
+      directory: "{{ test_directory }}"
+    snapshot_set_name: demo_snap
+    snapshot_fill_percent: 60
+    snapshot_max_retry: 100
+  tasks:
+  - name: Run pre-test steps
+    ansible.builtin.include_tasks: pre-test-tasks.yml
+
+  - name: Create the snapshot
+    ansible.builtin.include_tasks: create-snapshot.yml
+
+  - name: Fill the snapshot
+    ansible.builtin.include_tasks: fill-snapshot.yml
+
+  - name: Revert to Snapshot
+    vars:
+      lvm_snapshots_action: revert
+      lvm_snapshots_set_name: "{{ snapshot_set_name }}"
+    ansible.builtin.include_role:
+      name: lvm_snapshots
+
+  - name: Verify that the snapshot was completly drained
+    block:
+    - name: Verify that the snapshot no longer exists
+      vars:
+        volume_name: test_lv
+      ansible.builtin.include_tasks: verify-snapshot-not-exist.yml
+    - name: Verify that the snapshot was drained before returning
+      block:
+      - name: Get the status of the volume
+        ansible.builtin.command: "lvs --select 'lv_name = {{ volume_name }}' --reportformat json"
+        register: _lv_status_check
+        changed_when: false
+      - name: Store the snapshot data_percent
+        ansible.builtin.set_fact:
+          volume_data_percent: "{{ ((_lv_status_check.stdout | from_json).report[0].lv[0].data_percent) }}"
+      - name: Assert volume_data_percent is 0
+        ansible.builtin.assert:
+          that: volume_data_percent|float == 0.0
+          fail_msg: "Volume data percent is {{ volume_data_percent }} while it should be 0"
+    always:
+    - name: Cleanup
+      ansible.builtin.include_tasks: post-test-tasks.yml
