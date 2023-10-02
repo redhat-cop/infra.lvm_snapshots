@@ -1,0 +1,40 @@
+- name: Fill the volume
+  block:
+  - name: Set the retry count
+    ansible.builtin.set_fact:
+      _retry_count: "{{ (_retry_count | default('-1') | int) + 1 }}"
+
+  - name: Generate the Sub-Directory name
+    ansible.builtin.set_fact:
+      _sub_dir_name: "{{ lookup('community.general.random_string', upper=false, numbers=false, special=false) }}"
+
+  - name: Make a copy of the boot partition
+    ansible.builtin.copy:
+      src: /boot
+      dest: "{{ test_directory }}/{{ _sub_dir_name }}"
+      remote_src: true
+      mode: '0777'
+
+  - name: Get the status of the snapshot
+    ansible.builtin.command: "lvs --select 'lv_name = {{ volume_name }}_{{ snapshot_set_name }}' --reportformat json"
+    register: _lv_status_check
+    changed_when: false
+
+  - name: Store the snapshot data_percent
+    ansible.builtin.set_fact:
+      _snapshot_data_percent: "{{ ((_lv_status_check.stdout | from_json).report[0].lv[0].data_percent) }}"
+
+  - name: Check if snapshot is full enough
+    ansible.builtin.assert:
+      that: _snapshot_data_percent|float > snapshot_fill_percent|float
+      quiet: true
+
+  rescue:
+  - name: Check the retry count to avoid endless loop
+    ansible.builtin.assert:
+      that: (_retry_count|int) < (snapshot_max_retry|int)
+      fail_msg: "Ended after {{ snapshot_max_retry }} retries"
+      success_msg: "Volume is not full enought ({{ _snapshot_data_percent }}) - Run again..."
+
+  - name: Include the same tasks file again
+    ansible.builtin.include_tasks: fill-snapshot.yml

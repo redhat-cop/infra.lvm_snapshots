@@ -22,3 +22,12 @@
     path: "/root/boot-backup-{{ lvm_snapshots_set_name }}.tgz"
     state: absent
   when: lvm_snapshots_boot_backup
+
+- name: Wait for the snapshot to drain
+  ansible.builtin.command: "lvs --select 'vg_name = {{ item.vg_name }} && lv_name = {{ item.origin }}' --reportformat json"
+  register: _lv_drain_check
+  until: (_lv_drain_check.stdout | from_json).report[0].lv[0].data_percent == ""
+  retries: 20
+  delay: 30
+  loop: "{{ lvm_snapshots_snapshots }}"
+  changed_when: false
