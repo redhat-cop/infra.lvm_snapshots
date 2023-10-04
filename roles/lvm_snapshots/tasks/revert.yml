@@ -2,6 +2,13 @@
   ansible.builtin.include_tasks: verify_snapshot_active.yml
   loop: "{{ lvm_snapshots_snapshots }}"
 
+- name: Required packages are present
+  ansible.builtin.package:
+    name:
+    - gzip
+    - tar
+    state: present
+
 - name: Restore boot backup
   ansible.builtin.unarchive:
     remote_src: true
