@@ -26,6 +26,13 @@
     size: "{{ item.size | default(omit) }}"
   loop: "{{ lvm_snapshots_volumes }}"
 
+- name: Required packages are present
+  ansible.builtin.package:
+    name:
+    - gzip
+    - tar
+    state: present
+
 - name: Create boot backup
   community.general.archive:
     format: gz
