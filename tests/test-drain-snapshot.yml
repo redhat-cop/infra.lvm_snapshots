@@ -29,7 +29,7 @@
     ansible.builtin.include_role:
       name: lvm_snapshots
 
-  - name: Verify that the snapshot was completly drained
+  - name: Verify that the snapshot was completely drained
     block:
     - name: Verify that the snapshot no longer exists
       vars:

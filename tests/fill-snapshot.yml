@@ -34,7 +34,7 @@
     ansible.builtin.assert:
       that: (_retry_count|int) < (snapshot_max_retry|int)
       fail_msg: "Ended after {{ snapshot_max_retry }} retries"
-      success_msg: "Volume is not full enought ({{ _snapshot_data_percent }}) - Run again..."
+      success_msg: "Volume is not full enough ({{ _snapshot_data_percent }}) - Run again..."
 
   - name: Include the same tasks file again
     ansible.builtin.include_tasks: fill-snapshot.yml
