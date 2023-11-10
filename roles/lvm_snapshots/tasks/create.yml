@@ -44,7 +44,10 @@
     - "/boot/System.map-{{ ansible_kernel }}"
     - "/boot/symvers-{{ ansible_kernel }}.gz"
     - "/boot/config-{{ ansible_kernel }}"
+    - "/boot/.vmlinuz-{{ ansible_kernel }}.hmac"
     - /boot/grub/grub.conf
     - /boot/grub2/grub.cfg
+    - /boot/grub2/grubenv
+    - /boot/loader/entries
     - /boot/efi/EFI/redhat/grub.cfg
   when: lvm_snapshots_boot_backup
