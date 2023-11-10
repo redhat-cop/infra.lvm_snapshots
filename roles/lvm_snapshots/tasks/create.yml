@@ -18,6 +18,9 @@
     changed_when: true
     when: ((lvm_snapshots_new_lvm_config | trim) | length) > 0
 
+- name: Force grubenv saved_entry
+  ansible.builtin.shell: 'grubby --set-default-index=$(grubby --default-index)'
+
 - name: Create snapshots
   community.general.lvol:
     vg: "{{ item.vg }}"
