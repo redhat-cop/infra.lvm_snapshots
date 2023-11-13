@@ -30,6 +30,7 @@
 
 - name: Add grubenv saved_entry
   ansible.builtin.shell: 'grubby --set-default-index=$(grubby --default-index)'
+  changed_when: true
   when: grubenv.found is defined and grubenv.found == 0
 
 - name: Create snapshots
