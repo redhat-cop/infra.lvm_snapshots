@@ -18,8 +18,19 @@
     changed_when: true
     when: ((lvm_snapshots_new_lvm_config | trim) | length) > 0
 
-- name: Force grubenv saved_entry
+- name: Check for grubenv saved_entry
+  lineinfile:
+    name: /boot/grub2/grubenv
+    regexp: ^saved_entry=
+    state: absent
+  check_mode: true
+  changed_when: false
+  failed_when: false
+  register: grubenv
+
+- name: Add grubenv saved_entry
   ansible.builtin.shell: 'grubby --set-default-index=$(grubby --default-index)'
+  when: grubenv.found is defined and grubenv.found == 0
 
 - name: Create snapshots
   community.general.lvol:
