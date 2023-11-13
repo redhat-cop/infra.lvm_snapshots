@@ -19,7 +19,7 @@
     when: ((lvm_snapshots_new_lvm_config | trim) | length) > 0
 
 - name: Check for grubenv saved_entry
-  lineinfile:
+  ansible.builtin.lineinfile:
     name: /boot/grub2/grubenv
     regexp: ^saved_entry=
     state: absent
