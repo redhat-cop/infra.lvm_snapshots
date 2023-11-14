@@ -1,0 +1,2 @@
+bugfixes:
+  - Grub needs reinstall if /boot is on LVM
