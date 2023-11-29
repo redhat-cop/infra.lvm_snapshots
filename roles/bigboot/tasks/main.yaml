@@ -1,0 +1,70 @@
+---
+- name: Make sure the required related facts are available
+  ansible.builtin.setup:
+    gather_subset:
+    - "!all"
+    - "!min"
+    - mounts
+    - devices
+
+- name: Validate bigboot_size is not empty
+  ansible.builtin.assert:
+    that: bigboot_size | length >0
+    fail_msg: "bigboot_size is empty"
+
+- name: Validate initramfs preflight
+  ansible.builtin.include_role:
+    name: initramfs
+    tasks_from: preflight
+
+- name: Get boot device info
+  ansible.builtin.include_tasks:
+    file: get_boot_device_info.yml
+
+- name: Copy extend boot dracut module
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /usr/lib/dracut/modules.d/99extend_boot/
+    mode: "0554"
+  loop:
+  - bigboot.sh
+  - module-setup.sh
+  - sfdisk.static
+
+- name: Resolve and copy the shrink-start script
+  ansible.builtin.template:
+    src: increase-boot-partition.sh.j2
+    dest: /usr/lib/dracut/modules.d/99extend_boot/increase-boot-partition.sh
+    mode: '0554'
+
+- name: Create the initramfs and reboot to run the module
+  vars:
+    initramfs_add_modules: "extend_boot"
+  ansible.builtin.include_role:
+    name: initramfs
+
+- name: Remove dracut extend boot module
+  ansible.builtin.file:
+    path: /usr/lib/dracut/modules.d/99extend_boot
+    state: absent
+
+- name: Retrieve mount points
+  ansible.builtin.setup:
+    gather_subset:
+    - "!all"
+    - "!min"
+    - mounts
+
+- name: Capture boot device new size
+  ansible.builtin.set_fact:
+    boot_device_new_size: "{{ (ansible_facts.mounts | selectattr('mount', 'equalto', '/boot') | first).size_total | int }}"
+
+- name: Capture expected device size
+  ansible.builtin.set_fact:
+    expected_size: "{{ (bigboot_size | human_to_bytes | int) + (boot_device_original_size | int) }}"
+
+- name: Validate boot partition new size
+  ansible.builtin.assert:
+    that:
+    - boot_device_new_size != boot_device_original_size
+    fail_msg: "Boot partition size '{{ boot_device_new_size }}' did not change"
