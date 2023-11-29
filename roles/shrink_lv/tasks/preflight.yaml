@@ -7,8 +7,10 @@
     - shrink_lv_devices | length > 0
     fail_msg: shrink_lv_devices must be a list and include at least one element
 
-- name: Assert current kernel version is the default
-  ansible.builtin.include_tasks: check_kernel.yaml
+- name: Validate initramfs preflight
+  ansible.builtin.include_role:
+    name: initramfs
+    tasks_from: preflight
 
 - name: Check all devices
   ansible.builtin.include_tasks: check_device.yaml
