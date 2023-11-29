@@ -1,0 +1,63 @@
+---
+- name: Make sure the required facts are available
+  ansible.builtin.setup:
+    gather_subset:
+    - "!all"
+    - "!min"
+    - kernel
+    - mounts
+
+- name: Get kernel version
+  ansible.builtin.set_fact:
+    kernel_version: "{{ ansible_facts.kernel }}"
+
+- name: Run preflight checks
+  ansible.builtin.include_tasks: preflight.yaml
+
+- name: Create a backup of the current initramfs
+  ansible.builtin.copy:
+    remote_src: true
+    src: /boot/initramfs-{{ kernel_version }}.img
+    dest: /boot/initramfs-{{ kernel_version }}.img.{{ shrink_lv_backup_extension }}
+    mode: "0600"
+
+- name: Copy shrink LV dracut module
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /usr/lib/dracut/modules.d/99shrink_lv/
+    mode: "0554"
+  loop:
+  - module-setup.sh
+  - shrink.sh
+
+- name: Resolve and copy the shrink-start script
+  ansible.builtin.template:
+    src: shrink-start.sh.j2
+    dest: /usr/lib/dracut/modules.d/99shrink_lv/shrink-start.sh
+    mode: '0554'
+
+- name: Create a new initramfs with the extend boot module
+  ansible.builtin.command:
+    cmd: /usr/sbin/dracut -a shrink_lv --kver {{ kernel_version }} --force
+  changed_when: true
+
+- name: Reboot the server
+  ansible.builtin.reboot:
+    post_reboot_delay: 30
+
+- name: Restore previous initramfs
+  ansible.builtin.copy:
+    remote_src: true
+    src: /boot/initramfs-{{ kernel_version }}.img.{{ shrink_lv_backup_extension }}
+    dest: /boot/initramfs-{{ kernel_version }}.img
+    mode: "0600"
+
+- name: Remove initramfs backup file
+  ansible.builtin.file:
+    path: /boot/initramfs-{{ kernel_version }}.img.{{ shrink_lv_backup_extension }}
+    state: absent
+
+- name: Remove dracut extend boot module
+  ansible.builtin.file:
+    path: /usr/lib/dracut/modules.d/99shrink_lv
+    state: absent

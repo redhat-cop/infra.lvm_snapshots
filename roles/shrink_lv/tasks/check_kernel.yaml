@@ -1,0 +1,15 @@
+- name: Get default kernel
+  ansible.builtin.command:
+    cmd: /sbin/grubby --default-kernel
+  register: _grubby_rc
+  changed_when: false
+
+- name: Parse default kernel version
+  ansible.builtin.set_fact:
+    _default_kernel: "{{ ((((_grubby_rc.stdout_lines[0] | split('/'))[2] | split('-'))[1:]) | join('-')) | trim }}"
+
+- name: Check the values
+  ansible.builtin.assert:
+    that: _default_kernel == kernel_version
+    fail_msg: "Current kernel version '{{ kernel_version }}' is not the default version '{{ _default_kernel }}'"
+    success_msg: "Current kernel version {{ kernel_version }} and default version {{ _default_kernel }} match"
