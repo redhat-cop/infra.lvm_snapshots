@@ -1,3 +1,0 @@
-minor_changes:
-  - Changed the lvm_snapshots_boot_backup var default to false
-  - Removed unimplemented lvm_snapshots_use_boom var from the docs

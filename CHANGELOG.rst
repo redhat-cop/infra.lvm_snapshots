@@ -5,6 +5,23 @@ LVM Snapshot Linux Role Release Notes
 .. contents:: Topics
 
 
+v1.0.3
+======
+
+Minor Changes
+-------------
+
+- Changed the lvm_snapshots_boot_backup var default to false
+- Removed unimplemented lvm_snapshots_use_boom var from the docs
+- Revert - wait for snapshot to drain before returning
+
+Bugfixes
+--------
+
+- Add task to ensure tar package is present
+- Grub needs reinstall if /boot is on LVM
+- Wrong kernel version booting after rolling back
+
 v1.0.2
 ======
 
