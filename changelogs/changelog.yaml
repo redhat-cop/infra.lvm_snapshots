@@ -25,3 +25,20 @@ releases:
     - create_snapshots_with_normalized_sizes.yml
     - filtering_by_lvname_on_existing_snapshot_check.yml
     release_date: '2023-08-31'
+  1.0.3:
+    changes:
+      bugfixes:
+      - Add task to ensure tar package is present
+      - Grub needs reinstall if /boot is on LVM
+      - Wrong kernel version booting after rolling back
+      minor_changes:
+      - Changed the lvm_snapshots_boot_backup var default to false
+      - Removed unimplemented lvm_snapshots_use_boom var from the docs
+      - Revert - wait for snapshot to drain before returning
+    fragments:
+    - fix-lvm-grub.yml
+    - minor-var-changes.yml
+    - revert-wait-for-drain.yml
+    - tar-present.yml
+    - wrong-kernel.yml
+    release_date: '2023-11-29'
