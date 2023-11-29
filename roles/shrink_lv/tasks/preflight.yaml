@@ -1,0 +1,17 @@
+---
+- name: Assert shrink_lv_devices
+  ansible.builtin.assert:
+    that:
+    - shrink_lv_devices is defined
+    - shrink_lv_devices | type_debug == "list"
+    - shrink_lv_devices | length > 0
+    fail_msg: shrink_lv_devices must be a list and include at least one element
+
+- name: Validate initramfs preflight
+  ansible.builtin.include_role:
+    name: initramfs
+    tasks_from: preflight
+
+- name: Check all devices
+  ansible.builtin.include_tasks: check_device.yaml
+  loop: "{{ shrink_lv_devices }}"

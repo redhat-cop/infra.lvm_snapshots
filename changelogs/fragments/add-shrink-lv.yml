@@ -1,0 +1,2 @@
+major_changes:
+  - New role, shrink_lv, to decrease logical volume size along with the filesystem

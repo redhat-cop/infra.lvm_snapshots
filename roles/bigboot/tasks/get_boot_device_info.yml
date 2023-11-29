@@ -1,0 +1,20 @@
+- name: Find the boot mount entry
+  ansible.builtin.set_fact:
+    _boot_mount_entry: "{{ ansible_facts.mounts | selectattr('mount', 'equalto', '/boot') | first }}"
+
+- name: Calculate the partition to look for
+  ansible.builtin.set_fact:
+    _boot_partition_name: "{{ (_boot_mount_entry.device | split('/'))[-1] }}"
+
+- name: Find the boot device parent
+  ansible.builtin.set_fact:
+    _boot_disk: "{{ item.key }}"
+  with_dict: "{{ ansible_facts.devices }}"
+  when: _boot_partition_name in item.value.partitions
+
+- name: Capture boot device details
+  ansible.builtin.set_fact:
+    boot_device_partition_prefix: "{{ _boot_partition_name[(_boot_disk | length) : -1] }}"
+    boot_partition_number: "{{ _boot_partition_name[-1] }}"
+    boot_device_name: "/dev/{{ _boot_disk }}"
+    boot_device_original_size: "{{ _boot_mount_entry.size_total | int }}"
