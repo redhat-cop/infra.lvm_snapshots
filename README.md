@@ -1,6 +1,6 @@
 # LVM Snapshots Collection
 
-[![Ansible Lint](https://github.com/swapdisk/lvm_snapshots/workflows/Ansible%20Lint/badge.svg?event=push)](https://github.com/swapdisk/lvm_snapshots/actions) [![PyLint](https://github.com/swapdisk/lvm_snapshots/workflows/PyLint/badge.svg?event=push)](https://github.com/swapdisk/lvm_snapshots/actions)
+[![Ansible Lint](https://github.com/swapdisk/lvm_snapshots/workflows/Ansible%20Lint/badge.svg?event=push)](https://github.com/swapdisk/lvm_snapshots/actions) [![PyLint](https://github.com/swapdisk/lvm_snapshots/workflows/PyLint/badge.svg?event=push)](https://github.com/swapdisk/lvm_snapshots/actions) [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/8141/badge)](https://www.bestpractices.dev/projects/8141)
 
 ## Overview
 
