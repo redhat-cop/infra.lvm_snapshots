@@ -42,3 +42,15 @@ releases:
     - tar-present.yml
     - wrong-kernel.yml
     release_date: '2023-11-29'
+  1.1.0:
+    changes:
+      major_changes:
+      - New role, bigboot, to increase the boot partition while moving, and shrinking
+        if needed, the adjacent partition
+      - New role, initramfs, to execute an atomic flow of building and using a temporary
+        initramfs in a reboot and restoring the original one
+      - New role, shrink_lv, to decrease logical volume size along with the filesystem
+    fragments:
+    - add-bigboot-role.yml
+    - add-shrink-lv.yml
+    release_date: '2023-11-30'

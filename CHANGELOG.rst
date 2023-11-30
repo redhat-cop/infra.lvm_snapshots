@@ -5,6 +5,16 @@ LVM Snapshot Linux Role Release Notes
 .. contents:: Topics
 
 
+v1.1.0
+======
+
+Major Changes
+-------------
+
+- New role, bigboot, to increase the boot partition while moving, and shrinking if needed, the adjacent partition
+- New role, initramfs, to execute an atomic flow of building and using a temporary initramfs in a reboot and restoring the original one
+- New role, shrink_lv, to decrease logical volume size along with the filesystem
+
 v1.0.3
 ======
 
