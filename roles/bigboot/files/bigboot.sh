@@ -129,16 +129,16 @@ parse_flags() {
         do
         case $i in
             -d=*|--device=*)
-            DEVICE_NAME=(${i#*=})
+            DEVICE_NAME="(${i#*=})"
             ;;
             -s=*|--size=*)
-            INCREMENT_BOOT_PARTITION_SIZE=(${i#*=})
+            INCREMENT_BOOT_PARTITION_SIZE="(${i#*=})"
             ;;
             -b=*|--boot=*)
-            BOOT_PARTITION_NUMBER=(${i#*=})
+            BOOT_PARTITION_NUMBER="(${i#*=})"
             ;;
             -p=*|--prefix=*)
-            PARTITION_PREFIX=(${i#*=})
+            PARTITION_PREFIX="(${i#*=})"
             ;;
             -h)
             print_help

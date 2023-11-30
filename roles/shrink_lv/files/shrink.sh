@@ -16,8 +16,9 @@ function get_device_name() {
 }
 
 function ensure_size_in_bytes() {
-    local expected_size=$(/usr/bin/numfmt  --from iec "$1")
-    let expected_size=(${expected_size} + $VOLUME_SIZE_ALIGNMENT)/$VOLUME_SIZE_ALIGNMENT*$VOLUME_SIZE_ALIGNMENT
+    local expected_size
+    expected_size=$(/usr/bin/numfmt  --from iec "$1")
+    (( expected_size=(expected_size+VOLUME_SIZE_ALIGNMENT)/VOLUME_SIZE_ALIGNMENT*VOLUME_SIZE_ALIGNMENT ))
     echo $expected_size
 }
 
@@ -163,7 +164,7 @@ function parse_flags() {
         do
         case $i in
             -d=*|--device=*)
-            entries+=(${i#*=})
+            entries+="(${i#*=})"
             ;;
             -h)
             display_help
@@ -185,7 +186,7 @@ function parse_flags() {
 
 function parse_entry() {
     IFS=':'
-    read -a strarr <<< "$1"
+    read -ra strarr <<< "$1"
 
     if [[ ${#strarr[@]} != 2 ]]; then
         echo "Invalid device entry $1"
