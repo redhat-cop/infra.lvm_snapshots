@@ -1,6 +1,6 @@
 # initramfs
 
-The `initramfs` role is used to run an atomic flow of building and using a temporary initramfs in a reboot and restoring the original one.
+The `initramfs` role is included by the `shrink_lv` and `bigboot` roles to run an atomic flow of building and using a temporary initramfs in a reboot and restoring the original one.
 
 The role is designed to be internal for this collection and support the automation of RHEL in-place upgrades, but can also be used for other purposes.
 

@@ -11,11 +11,9 @@ A reliable snapshot/rollback capability is a key feature required to enable the 
 These are the roles included in the collection. Follow the links below to see the detailed documentation and example playbooks for each role.
 
 - [`lvm_snapshots`](./roles/lvm_snapshots/) - controls creation and rollback for a defined set of LVM snapshot volumes
+- [`shrink_lv`](./roles/shrink_lv/) - controls decreasing logical volume size along with the filesystem
 - [`bigboot`](./roles/bigboot/) - controls increasing of the boot partition while moving, and shrinking if needed, the adjacent partition
 - [`initramfs`](./roles/initramfs/) - controls the atomic flow of building and using a temporary initramfs in a reboot and restoring the original one
-- [`shrink_lv`](./roles/shrink_lv/) - controls decreasing logical volume size along with the filesystem
-
-Additional roles are planned to support shrinking logical volumes to make free space available in a volume group and relocating physical volumes to enable increasing the size of a /boot /partition.
 
 ## Installing the collection from Ansible Galaxy
 
