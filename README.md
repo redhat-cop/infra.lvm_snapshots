@@ -1,6 +1,6 @@
 # LVM Snapshots Collection
 
-[![Ansible Lint](https://github.com/swapdisk/lvm_snapshots/workflows/Ansible%20Lint/badge.svg?event=push)](https://github.com/swapdisk/lvm_snapshots/actions) [![PyLint](https://github.com/swapdisk/lvm_snapshots/workflows/PyLint/badge.svg?event=push)](https://github.com/swapdisk/lvm_snapshots/actions) [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/8141/badge)](https://www.bestpractices.dev/projects/8141)
+[![Ansible Lint](https://github.com/swapdisk/infra.lvm_snapshots/workflows/Ansible%20Lint/badge.svg?event=push)](https://github.com/swapdisk/infra.lvm_snapshots/actions) [![PyLint](https://github.com/swapdisk/infra.lvm_snapshots/workflows/PyLint/badge.svg?event=push)](https://github.com/swapdisk/infra.lvm_snapshots/actions) [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/8141/badge)](https://www.bestpractices.dev/projects/8141)
 
 ## Overview
 
@@ -51,7 +51,7 @@ We appreciate participation from any new contributors. Get started by opening an
 
 ## Reporting issues
 
-Please open a [new issue](https://github.com/swapdisk/lvm_snapshots/issues/new/choose) for any bugs or security vulnerabilities you may encounter. We also invite you to open an issue if you have ideas on how we can improve the solution or want to make a suggestion for enhancement.
+Please open a [new issue](https://github.com/swapdisk/infra.lvm_snapshots/issues/new/choose) for any bugs or security vulnerabilities you may encounter. We also invite you to open an issue if you have ideas on how we can improve the solution or want to make a suggestion for enhancement.
 
 ## More information
 
@@ -59,7 +59,7 @@ This collection is just one building block of our larger initiative to make RHEL
 
 ## Release notes
 
-See the [changelog](https://github.com/swapdisk/lvm_snapshots/tree/main/CHANGELOG.rst).
+See the [changelog](https://github.com/swapdisk/infra.lvm_snapshots/tree/main/CHANGELOG.rst).
 
 ## Licensing
 
