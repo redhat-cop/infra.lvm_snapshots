@@ -11,10 +11,13 @@ jobs:
     uses: swapdisk/lvm_snapshots/.github/workflows/ansible-lint.yml@main
   pylint:
     uses: swapdisk/lvm_snapshots/.github/workflows/pylint.yml@main
+  shellcheck:
+      uses: swapdisk/lvm_snapshots/.github/workflows/shellcheck.yml@main
   prechecks:
     needs:
       - ansible-lint
       - pylint
+      - shellcheck
     runs-on: ubuntu-latest
     steps:
       - run: >-
