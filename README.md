@@ -1,6 +1,6 @@
 # LVM Snapshots Collection
 
-[![Ansible Lint](https://github.com/swapdisk/lvm_snapshots/workflows/Ansible%20Lint/badge.svg?event=push)](https://github.com/swapdisk/lvm_snapshots/actions) [![PyLint](https://github.com/swapdisk/lvm_snapshots/workflows/PyLint/badge.svg?event=push)](https://github.com/swapdisk/lvm_snapshots/actions) [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/8141/badge)](https://www.bestpractices.dev/projects/8141)
+[![Ansible Lint](https://github.com/swapdisk/infra.lvm_snapshots/workflows/Ansible%20Lint/badge.svg?event=push)](https://github.com/swapdisk/infra.lvm_snapshots/actions) [![PyLint](https://github.com/swapdisk/infra.lvm_snapshots/workflows/PyLint/badge.svg?event=push)](https://github.com/swapdisk/infra.lvm_snapshots/actions) [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/8141/badge)](https://www.bestpractices.dev/projects/8141)
 
 ## Overview
 
@@ -11,11 +11,9 @@ A reliable snapshot/rollback capability is a key feature required to enable the 
 These are the roles included in the collection. Follow the links below to see the detailed documentation and example playbooks for each role.
 
 - [`lvm_snapshots`](./roles/lvm_snapshots/) - controls creation and rollback for a defined set of LVM snapshot volumes
+- [`shrink_lv`](./roles/shrink_lv/) - controls decreasing logical volume size along with the filesystem
 - [`bigboot`](./roles/bigboot/) - controls increasing of the boot partition while moving, and shrinking if needed, the adjacent partition
 - [`initramfs`](./roles/initramfs/) - controls the atomic flow of building and using a temporary initramfs in a reboot and restoring the original one
-- [`shrink_lv`](./roles/shrink_lv/) - controls decreasing logical volume size along with the filesystem
-
-Additional roles are planned to support shrinking logical volumes to make free space available in a volume group and relocating physical volumes to enable increasing the size of a /boot /partition.
 
 ## Installing the collection from Ansible Galaxy
 
@@ -53,7 +51,7 @@ We appreciate participation from any new contributors. Get started by opening an
 
 ## Reporting issues
 
-Please open a [new issue](https://github.com/swapdisk/lvm_snapshots/issues/new/choose) for any bugs or security vulnerabilities you may encounter. We also invite you to open an issue if you have ideas on how we can improve the solution or want to make a suggestion for enhancement.
+Please open a [new issue](https://github.com/swapdisk/infra.lvm_snapshots/issues/new/choose) for any bugs or security vulnerabilities you may encounter. We also invite you to open an issue if you have ideas on how we can improve the solution or want to make a suggestion for enhancement.
 
 ## More information
 
@@ -61,7 +59,7 @@ This collection is just one building block of our larger initiative to make RHEL
 
 ## Release notes
 
-See the [changelog](https://github.com/swapdisk/lvm_snapshots/tree/main/CHANGELOG.rst).
+See the [changelog](https://github.com/swapdisk/infra.lvm_snapshots/tree/main/CHANGELOG.rst).
 
 ## Licensing
 
