@@ -19,7 +19,7 @@
 
 - name: Create a new initramfs with the optional additional modules
    # yamllint disable-line rule:line-length
-  ansible.builtin.command: '/usr/sbin/dracut {{ ((initramfs_add_modules | length) > 0) | ternary("-a", "") }} "{{ initramfs_add_modules }}" --kver {{ _kernel_version }} --force'
+  ansible.builtin.command: '/usr/bin/dracut {{ ((initramfs_add_modules | length) > 0) | ternary("-a", "") }} "{{ initramfs_add_modules }}" --kver {{ _kernel_version }} --force'
   changed_when: true
 
 - name: Reboot the server
