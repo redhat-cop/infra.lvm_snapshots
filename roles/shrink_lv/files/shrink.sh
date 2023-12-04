@@ -164,7 +164,7 @@ function parse_flags() {
         do
         case $i in
             -d=*|--device=*)
-            entries+="(${i#*=})"
+            entries+=("${i#*=}")
             ;;
             -h)
             display_help
