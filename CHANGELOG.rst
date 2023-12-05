@@ -5,6 +5,15 @@ LVM Snapshot Linux Role Release Notes
 .. contents:: Topics
 
 
+v1.1.1
+======
+
+Bugfixes
+--------
+
+- Fix "Failed to list block device properties" error
+- Fix dracut path
+
 v1.1.0
 ======
 

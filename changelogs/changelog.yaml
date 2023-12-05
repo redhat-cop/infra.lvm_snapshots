@@ -54,3 +54,12 @@ releases:
     - add-bigboot-role.yml
     - add-shrink-lv.yml
     release_date: '2023-11-30'
+  1.1.1:
+    changes:
+      bugfixes:
+      - Fix "Failed to list block device properties" error
+      - Fix dracut path
+    fragments:
+    - fix_entries.yml
+    - no_sbin_dracut.yml
+    release_date: '2023-12-05'
