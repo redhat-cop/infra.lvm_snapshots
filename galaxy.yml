@@ -14,10 +14,10 @@ tags:
 - storage
 dependencies:
   "community.general": "*"
-repository: https://github.com/swapdisk/infra.lvm_snapshots
-documentation: https://github.com/swapdisk/infra.lvm_snapshots
-homepage: https://github.com/swapdisk/infra.lvm_snapshots
-issues: https://github.com/swapdisk/infra.lvm_snapshots/issues
+repository: https://github.com/redhat-cop/infra.lvm_snapshots
+documentation: https://github.com/redhat-cop/infra.lvm_snapshots
+homepage: https://github.com/redhat-cop/infra.lvm_snapshots
+issues: https://github.com/redhat-cop/infra.lvm_snapshots/issues
 build_ignore:
 - .ansible-lint
 - .pylintrc

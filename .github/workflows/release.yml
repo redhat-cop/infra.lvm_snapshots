@@ -8,11 +8,11 @@ on:
 
 jobs:
   ansible-lint:
-    uses: swapdisk/infra.lvm_snapshots/.github/workflows/ansible-lint.yml@main
+    uses: redhat-cop/infra.lvm_snapshots/.github/workflows/ansible-lint.yml@main
   pylint:
-    uses: swapdisk/infra.lvm_snapshots/.github/workflows/pylint.yml@main
+    uses: redhat-cop/infra.lvm_snapshots/.github/workflows/pylint.yml@main
   shellcheck:
-      uses: swapdisk/infra.lvm_snapshots/.github/workflows/shellcheck.yml@main
+      uses: redhat-cop/infra.lvm_snapshots/.github/workflows/shellcheck.yml@main
   prechecks:
     needs:
       - ansible-lint
