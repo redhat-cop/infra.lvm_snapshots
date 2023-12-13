@@ -63,3 +63,10 @@ releases:
     - fix_entries.yml
     - no_sbin_dracut.yml
     release_date: '2023-12-05'
+  1.1.2:
+    changes:
+      minor_changes:
+      - Updated links in docs and workflows to reflect move to redhat-cop org
+    fragments:
+    - update_links.yml
+    release_date: '2023-12-13'
