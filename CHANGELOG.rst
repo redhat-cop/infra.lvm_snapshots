@@ -5,6 +5,14 @@ LVM Snapshot Linux Role Release Notes
 .. contents:: Topics
 
 
+v1.1.2
+======
+
+Minor Changes
+-------------
+
+- Updated links in docs and workflows to reflect move to redhat-cop org
+
 v1.1.1
 ======
 
