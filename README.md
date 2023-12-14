@@ -6,6 +6,20 @@
 
 A reliable snapshot/rollback capability is a key feature required to enable the success of RHEL In-place Upgrade automation solutions. Without it, users will be wary of using the solution because of the potential risk that their applications may not function properly after the OS upgrade. Including automation so that snapshot creation happens right before the OS upgrade reduces this risk. If there are any application issues uncovered after the OS upgrade, a rollback playbook can be executed to instantly revert the environment back to the original state as it was before the upgrade. Application teams will no longer have an excuse not to use in-place upgrades to bring their RHEL estate into compliance.
 
+## Requirements
+
+### Ansible Version
+
+This collection requires ansible from version `2.14.0` and above
+
+### Collections
+
+This collection depends on the following collections
+
+```yaml
+- "community.general": "*"
+```
+
 ## Roles
 
 These are the roles included in the collection. Follow the links below to see the detailed documentation and example playbooks for each role.
