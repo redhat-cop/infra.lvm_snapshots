@@ -1,20 +1,20 @@
 - name: Get the mount point info
   ansible.builtin.set_fact:
-    _mount_info: "{{ ansible_facts.mounts | selectattr('device', 'equalto', item.device) }}"
+    shrink_lv_mount_info: "{{ ansible_facts.mounts | selectattr('device', 'equalto', item.device) }}"
 
 - name: Assert that the mount point exists
   ansible.builtin.assert:
-    that: (_mount_info | length) == 1
+    that: (shrink_lv_mount_info | length) == 1
     fail_msg: "Mount point {{ item.device }} does not exist"
 
 - name: Assert that the filesystem is supported
   ansible.builtin.assert:
-    that: _mount_info[0].fstype in ['ext4']
-    fail_msg: "Unsupported filesystem '{{ _mount_info[0].fstype }}' on '{{ item.device }}'"
+    that: shrink_lv_mount_info[0].fstype in ['ext4']
+    fail_msg: "Unsupported filesystem '{{ shrink_lv_mount_info[0].fstype }}' on '{{ item.device }}'"
 
 - name: Assert that the filesystem has enough free space
   ansible.builtin.assert:
-    that: _mount_info[0].block_size * _mount_info[0].block_used < (item.size | ansible.builtin.human_to_bytes)
+    that: shrink_lv_mount_info[0].block_size * shrink_lv_mount_info[0].block_used < (item.size | ansible.builtin.human_to_bytes)
     fail_msg: >
       Requested size {{ item.size }} is smaller than currently used
-      {{ (_mount_info[0].block_size * _mount_info[0].block_used) | ansible.builtin.human_readable }}
+      {{ (shrink_lv_mount_info[0].block_size * shrink_lv_mount_info[0].block_used) | ansible.builtin.human_readable }}
