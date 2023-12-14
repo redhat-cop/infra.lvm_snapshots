@@ -57,14 +57,10 @@
 
 - name: Capture boot device new size
   ansible.builtin.set_fact:
-    boot_device_new_size: "{{ (ansible_facts.mounts | selectattr('mount', 'equalto', '/boot') | first).size_total | int }}"
-
-- name: Capture expected device size
-  ansible.builtin.set_fact:
-    expected_size: "{{ (bigboot_size | human_to_bytes | int) + (boot_device_original_size | int) }}"
+    bigboot_boot_device_new_size: "{{ (ansible_facts.mounts | selectattr('mount', 'equalto', '/boot') | first).size_total | int }}"
 
 - name: Validate boot partition new size
   ansible.builtin.assert:
     that:
-    - boot_device_new_size != boot_device_original_size
-    fail_msg: "Boot partition size '{{ boot_device_new_size }}' did not change"
+    - bigboot_boot_device_new_size != bigboot_boot_device_original_size
+    fail_msg: "Boot partition size '{{ bigboot_boot_device_new_size }}' did not change"

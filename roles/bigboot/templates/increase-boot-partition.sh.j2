@@ -17,12 +17,12 @@ main() {
     start=$(/usr/bin/date +%s)
     disable_lvm_lock
     # run bigboot.sh to increase boot partition and file system size
-    ret=$(sh /usr/bin/bigboot.sh -d="{{ boot_device_name }}" -s="{{ bigboot_size }}" -b="{{ boot_partition_number }}" -p="{{ boot_device_partition_prefix }}" 2>/dev/kmsg)
+    ret=$(sh /usr/bin/bigboot.sh -d="{{ bigboot_boot_device_name }}" -s="{{ bigboot_size }}" -b="{{ bigboot_boot_partition_number }}" -p="{{ bigboot_boot_device_partition_prefix }}" 2>/dev/kmsg)
     status=$?
     end=$(/usr/bin/date +%s)
     # write the log file
     if [[ $status -eq 0 ]]; then
-        echo "[$name] Boot partition {{ boot_device_name }} successfully increased by {{ bigboot_size }} ("$((end-start))" seconds) " >/dev/kmsg
+        echo "[$name] Boot partition {{ bigboot_boot_device_name }} successfully increased by {{ bigboot_size }} ("$((end-start))" seconds) " >/dev/kmsg
     else
         echo "[$name] Failed to extend boot partition: $ret ("$((end-start))" seconds)" >/dev/kmsg
     fi
