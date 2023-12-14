@@ -1,26 +1,26 @@
 - name: Verify that all volumes exist
   ansible.builtin.include_tasks: verify_volume_exists.yml
-  loop: "{{ lvm_snapshots_volumes }}"
+  loop: "{{ create_snapshot_volumes }}"
 
 - name: Verify that there are no existing snapshots
   ansible.builtin.include_tasks: verify_no_existing_snapshot.yml
-  loop: "{{ lvm_snapshots_volumes }}"
+  loop: "{{ create_snapshot_volumes }}"
 
 - name: Verify that there is enough storage space
-  ansible.builtin.script: check.py snapshots '{{ lvm_snapshots_volumes | to_json }}'
+  ansible.builtin.script: check.py snapshots '{{ create_snapshot_volumes | to_json }}'
   args:
     executable: "{{ ansible_python.executable }}"
-  register: lvm_snapshots_check_status
+  register: create_snapshot_check_status
   failed_when: false
   changed_when: false
 
 - name: Store check return in case of failure
   ansible.builtin.set_fact:
-    lvm_snapshots_check_failure_json: "{{ lvm_snapshots_check_status.stdout | from_json }}"
-  when: lvm_snapshots_check_status.rc != 0
+    create_snapshot_check_failure_json: "{{ create_snapshot_check_status.stdout | from_json }}"
+  when: create_snapshot_check_status.rc != 0
 
 - name: Assert results
   ansible.builtin.assert:
-    that: lvm_snapshots_check_status.rc == 0
+    that: create_snapshot_check_status.rc == 0
     fail_msg: Not enough space in the Volume Groups to create the requested snapshots
     success_msg: The Volume Groups have enough space to create the requested snapshots

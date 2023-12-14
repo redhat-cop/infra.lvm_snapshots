@@ -49,10 +49,9 @@
     always:
     - name: Remove Snapshot
       vars:
-        lvm_snapshots_action: remove
-        lvm_snapshots_set_name: "{{ snapshot_set_name }}"
+        remove_snapshot_set_name: "{{ snapshot_set_name }}"
       ansible.builtin.include_role:
-        name: lvm_snapshots
+        name: remove_snapshot
     - name: Cleanup
       vars:
         volumes:
