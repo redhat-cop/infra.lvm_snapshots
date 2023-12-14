@@ -8,20 +8,20 @@
 
 - name: Get kernel version
   ansible.builtin.set_fact:
-    _kernel_version: "{{ ansible_facts.kernel }}"
+    initramfs_kernel_version: "{{ ansible_facts.kernel }}"
 
 - name: Get default kernel
   ansible.builtin.command:
     cmd: /sbin/grubby --default-kernel
-  register: _grubby_rc
+  register: initramfs_grubby_rc
   changed_when: false
 
 - name: Parse default kernel version
   ansible.builtin.set_fact:
-    _default_kernel: "{{ ((((_grubby_rc.stdout_lines[0] | split('/'))[2] | split('-'))[1:]) | join('-')) | trim }}"
+    initramfs_default_kernel: "{{ ((((initramfs_grubby_rc.stdout_lines[0] | split('/'))[2] | split('-'))[1:]) | join('-')) | trim }}"
 
 - name: Check the values
   ansible.builtin.assert:
-    that: _default_kernel == _kernel_version
-    fail_msg: "Current kernel version '{{ _kernel_version }}' is not the default version '{{ _default_kernel }}'"
-    success_msg: "Current kernel version {{ _kernel_version }} and default version {{ _default_kernel }} match"
+    that: initramfs_default_kernel == initramfs_kernel_version
+    fail_msg: "Current kernel version '{{ initramfs_kernel_version }}' is not the default version '{{ initramfs_default_kernel }}'"
+    success_msg: "Current kernel version {{ initramfs_kernel_version }} and default version {{ initramfs_default_kernel }} match"
