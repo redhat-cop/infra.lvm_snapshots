@@ -24,10 +24,9 @@
 
   - name: Revert to Snapshot
     vars:
-      lvm_snapshots_action: revert
-      lvm_snapshots_set_name: "{{ snapshot_set_name }}"
+      revert_snapshot_set_name: "{{ snapshot_set_name }}"
     ansible.builtin.include_role:
-      name: lvm_snapshots
+      name: revert_snapshot
 
   - name: Verify that the snapshot was completely drained
     block:

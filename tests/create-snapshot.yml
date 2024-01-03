@@ -5,11 +5,10 @@
 
 - name: Create the snapshot
   vars:
-    lvm_snapshots_action: create
-    lvm_snapshots_volumes: "{{ _snapshots }}"
-    lvm_snapshots_set_name: "{{ snapshot_set_name }}"
+    create_snapshot_volumes: "{{ _snapshots }}"
+    create_snapshot_set_name: "{{ snapshot_set_name }}"
   ansible.builtin.include_role:
-    name: lvm_snapshots
+    name: create_snapshot
 
 - name: Verify that the snapshot was created
   ansible.builtin.include_tasks: verify-snapshot-created.yml

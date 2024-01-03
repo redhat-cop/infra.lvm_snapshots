@@ -1,9 +1,9 @@
 - name: Run lvs
   ansible.builtin.command: "lvs --select 'vg_name = {{ item.vg }} && lv_name = {{ item.lv }}' --reportformat json"
-  register: lvm_snapshots_lvs_response
+  register: create_snapshot_lvs_response
   changed_when: false
 
 - name: Verify that the volume was found
   ansible.builtin.assert:
-    that: (((lvm_snapshots_lvs_response.stdout | from_json).report[0].lv) | length) > 0
+    that: (((create_snapshot_lvs_response.stdout | from_json).report[0].lv) | length) > 0
     fail_msg: "Could not find volume '{{ item.lv }}' in volume group '{{ item.vg }}'"

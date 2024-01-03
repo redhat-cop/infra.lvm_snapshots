@@ -1,0 +1,8 @@
+- name: Check available disk space
+  ansible.builtin.include_tasks: check.yml
+
+- name: Create Snapshot
+  vars:
+    create_snapshot_volumes: "{{ create_snapshot_check_status.stdout | from_json }}"
+  ansible.builtin.include_tasks: create.yml
+  when: not (create_snapshot_check_only | default(false))
