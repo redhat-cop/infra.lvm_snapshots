@@ -123,7 +123,7 @@ validate_increment_partition_size() {
 
 # Capture all parameters:
 # Mandatory: Device, Size and Boot Partition Number
-# Optional: Parition Prefix (e.g. "p" for nvme based volumes)
+# Optional: Partition Prefix (e.g. "p" for nvme based volumes)
 parse_flags() {
     for i in "$@"
         do
@@ -522,7 +522,7 @@ activate_volume_group(){
     sleep 1
 }
 
-# last steps are to run the fsck on boot partition and activate the volume gruop if necessary
+# last steps are to run the fsck on boot partition and activate the volume group if necessary
 cleanup(){
     # run a file system check to the boot file system
     check_filesystem "${DEVICE_NAME}${PARTITION_PREFIX}${BOOT_PARTITION_NUMBER}"
