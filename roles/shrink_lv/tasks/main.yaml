@@ -27,7 +27,7 @@
 
 - name: Create the initramfs and reboot to run the module
   vars:
-    initramfs_add_modules: "shrink_lv"
+    initramfs_add_modules: "shrink_lv lvm"
   ansible.builtin.include_role:
     name: initramfs
 
