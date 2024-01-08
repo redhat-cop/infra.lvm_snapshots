@@ -13,11 +13,14 @@ jobs:
     uses: redhat-cop/infra.lvm_snapshots/.github/workflows/pylint.yml@main
   shellcheck:
       uses: redhat-cop/infra.lvm_snapshots/.github/workflows/shellcheck.yml@main
+  codespell:
+      uses: redhat-cop/infra.lvm_snapshots/.github/workflows/codespell.yml@main
   prechecks:
     needs:
       - ansible-lint
       - pylint
       - shellcheck
+      - codespell
     runs-on: ubuntu-latest
     steps:
       - run: >-
