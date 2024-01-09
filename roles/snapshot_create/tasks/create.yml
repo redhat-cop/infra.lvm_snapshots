@@ -2,21 +2,21 @@
   block:
   - name: Stringify snapshot_autoextend_percent setting
     ansible.builtin.set_fact:
-      create_snapshot_snapshot_autoextend_percent_config: "activation/snapshot_autoextend_percent={{ create_snapshot_snapshot_autoextend_percent }}"
-    when: create_snapshot_snapshot_autoextend_percent is defined
+      snapshot_create_snapshot_autoextend_percent_config: "activation/snapshot_autoextend_percent={{ snapshot_create_snapshot_autoextend_percent }}"
+    when: snapshot_create_snapshot_autoextend_percent is defined
   - name: Stringify snapshot_autoextend_threshold setting
     ansible.builtin.set_fact:
-      create_snapshot_snapshot_autoextend_threshold_config: "activation/snapshot_autoextend_threshold={{ create_snapshot_snapshot_autoextend_threshold }}"
-    when: create_snapshot_snapshot_autoextend_threshold is defined
+      snapshot_create_snapshot_autoextend_threshold_config: "activation/snapshot_autoextend_threshold={{ snapshot_create_snapshot_autoextend_threshold }}"
+    when: snapshot_create_snapshot_autoextend_threshold is defined
   - name: Stringify the new config
     ansible.builtin.set_fact:
-      create_snapshot_new_lvm_config: >
-        {{ create_snapshot_snapshot_autoextend_percent_config | default('') }}
-         {{ create_snapshot_snapshot_autoextend_threshold_config | default('') }}
+      snapshot_create_new_lvm_config: >
+        {{ snapshot_create_snapshot_autoextend_percent_config | default('') }}
+         {{ snapshot_create_snapshot_autoextend_threshold_config | default('') }}
   - name: Set LVM configuration
-    ansible.builtin.command: 'lvmconfig --mergedconfig --config "{{ create_snapshot_new_lvm_config }}" --file /etc/lvm/lvm.conf'
+    ansible.builtin.command: 'lvmconfig --mergedconfig --config "{{ snapshot_create_new_lvm_config }}" --file /etc/lvm/lvm.conf'
     changed_when: true
-    when: ((create_snapshot_new_lvm_config | trim) | length) > 0
+    when: ((snapshot_create_new_lvm_config | trim) | length) > 0
 
 - name: Check for grubenv saved_entry
   ansible.builtin.lineinfile:
@@ -26,20 +26,20 @@
   check_mode: true
   changed_when: false
   failed_when: false
-  register: create_snapshot_grubenv
+  register: snapshot_create_grubenv
 
 - name: Add grubenv saved_entry
   ansible.builtin.shell: 'grubby --set-default-index=$(grubby --default-index)'
   changed_when: true
-  when: create_snapshot_grubenv.found is defined and create_snapshot_grubenv.found == 0
+  when: snapshot_create_grubenv.found is defined and snapshot_create_grubenv.found == 0
 
 - name: Create snapshots
   community.general.lvol:
     vg: "{{ item.vg }}"
     lv: "{{ item.lv }}"
-    snapshot: "{{ item.lv }}_{{ create_snapshot_set_name }}"
+    snapshot: "{{ item.lv }}_{{ snapshot_create_set_name }}"
     size: "{{ item.size | default(omit) }}"
-  loop: "{{ create_snapshot_volumes }}"
+  loop: "{{ snapshot_create_volumes }}"
 
 - name: Required packages are present
   ansible.builtin.package:
@@ -52,7 +52,7 @@
   community.general.archive:
     format: gz
     mode: '0644'
-    dest: "/root/boot-backup-{{ create_snapshot_set_name }}.tgz"
+    dest: "/root/boot-backup-{{ snapshot_create_set_name }}.tgz"
     path:
     - "/boot/initramfs-{{ ansible_kernel }}.img"
     - "/boot/vmlinuz-{{ ansible_kernel }}"
@@ -65,4 +65,4 @@
     - /boot/grub2/grubenv
     - /boot/loader/entries
     - /boot/efi/EFI/redhat/grub.cfg
-  when: create_snapshot_boot_backup
+  when: snapshot_create_boot_backup

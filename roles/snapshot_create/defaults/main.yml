@@ -1,2 +1,2 @@
-create_snapshot_volumes: []
-create_snapshot_boot_backup: false
+snapshot_create_volumes: []
+snapshot_create_boot_backup: false

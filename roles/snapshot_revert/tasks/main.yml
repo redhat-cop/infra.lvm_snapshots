@@ -1,16 +1,16 @@
 - name: Calculate the list of snapshots
   block:
   - name: Get list of volumes
-    ansible.builtin.command: "lvs --select 'lv_name =~ {{ revert_snapshot_set_name }}$ && origin != \"\"' --reportformat json "
-    register: revert_snapshot_lvs_response
+    ansible.builtin.command: "lvs --select 'lv_name =~ {{ snapshot_revert_set_name }}$ && origin != \"\"' --reportformat json "
+    register: snapshot_revert_lvs_response
     changed_when: false
   - name: Get LV dict List
     ansible.builtin.set_fact:
-      revert_snapshot_snapshots: "{{ (revert_snapshot_lvs_response.stdout | from_json).report[0].lv }}"
+      snapshot_revert_snapshots: "{{ (snapshot_revert_lvs_response.stdout | from_json).report[0].lv }}"
 
 - name: Verify that all snapshots are active
   ansible.builtin.include_tasks: verify_snapshot_active.yml
-  loop: "{{ revert_snapshot_snapshots }}"
+  loop: "{{ snapshot_revert_snapshots }}"
 
 - name: Required packages are present
   ansible.builtin.package:
@@ -21,19 +21,19 @@
 
 - name: Check if Boot backup exists
   ansible.builtin.stat:
-    path: "/root/boot-backup-{{ revert_snapshot_set_name }}.tgz"
-  register: revert_snapshot_boot_archive_stat
+    path: "/root/boot-backup-{{ snapshot_revert_set_name }}.tgz"
+  register: snapshot_revert_boot_archive_stat
 
 - name: Restore boot backup
   ansible.builtin.unarchive:
     remote_src: true
-    src: "{{ revert_snapshot_boot_archive_stat.stat.path }}"
+    src: "{{ snapshot_revert_boot_archive_stat.stat.path }}"
     dest: /boot
-  when: revert_snapshot_boot_archive_stat.stat.exists
+  when: snapshot_revert_boot_archive_stat.stat.exists
 
 - name: Revert to snapshots
   ansible.builtin.command: "lvconvert --merge /dev/{{ item.vg_name }}/{{ item.lv_name }}"
-  loop: "{{ revert_snapshot_snapshots }}"
+  loop: "{{ snapshot_revert_snapshots }}"
   changed_when: false
 
 - name: Reboot
@@ -43,31 +43,31 @@
   ansible.builtin.command: "grub2-probe --target=abstraction /boot"
   changed_when: false
   failed_when: false
-  register: revert_snapshot_boot_abstraction
+  register: snapshot_revert_boot_abstraction
 
 - name: Reinstall Grub to boot device
-  when: revert_snapshot_boot_abstraction.stdout == 'lvm'
+  when: snapshot_revert_boot_abstraction.stdout == 'lvm'
   block:
   - name: Get boot device
     ansible.builtin.shell: "lsblk -spnlo name $(grub2-probe --target=device /boot)"
     changed_when: false
-    register: revert_snapshot_boot_dev_deps
+    register: snapshot_revert_boot_dev_deps
 
   - name: Run grub2-install
-    ansible.builtin.command: "grub2-install {{ revert_snapshot_boot_dev_deps.stdout_lines | last }}"
+    ansible.builtin.command: "grub2-install {{ snapshot_revert_boot_dev_deps.stdout_lines | last }}"
     changed_when: true
 
 - name: Remove boot backup
   ansible.builtin.file:
-    path: "{{ revert_snapshot_boot_archive_stat.stat.path }}"
+    path: "{{ snapshot_revert_boot_archive_stat.stat.path }}"
     state: absent
-  when: revert_snapshot_boot_archive_stat.stat.exists
+  when: snapshot_revert_boot_archive_stat.stat.exists
 
 - name: Wait for the snapshot to drain
   ansible.builtin.command: "lvs --select 'vg_name = {{ item.vg_name }} && lv_name = {{ item.origin }}' --reportformat json"
-  register: revert_snapshot_lv_drain_check
-  until: (revert_snapshot_lv_drain_check.stdout | from_json).report[0].lv[0].data_percent == ""
+  register: snapshot_revert_lv_drain_check
+  until: (snapshot_revert_lv_drain_check.stdout | from_json).report[0].lv[0].data_percent == ""
   retries: 20
   delay: 30
-  loop: "{{ revert_snapshot_snapshots }}"
+  loop: "{{ snapshot_revert_snapshots }}"
   changed_when: false

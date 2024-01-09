@@ -3,19 +3,19 @@
     lvs
     --select 'vg_name = {{ item.vg }}
     && origin = {{ item.lv }}
-    && lv_name = {{ item.lv }}_{{ create_snapshot_set_name }}'
+    && lv_name = {{ item.lv }}_{{ snapshot_create_set_name }}'
     --reportformat json
-  register: create_snapshot_lvs_response
+  register: snapshot_create_lvs_response
   changed_when: false
 
 - name: Parse report
   ansible.builtin.set_fact:
-    create_snapshot_lv_snapshot_report_array: "{{ (create_snapshot_lvs_response.stdout | from_json).report[0].lv }}"
+    snapshot_create_lv_snapshot_report_array: "{{ (snapshot_create_lvs_response.stdout | from_json).report[0].lv }}"
 
 - name: Verify that the no snapshot exists for the volume
   ansible.builtin.assert:
-    that: (create_snapshot_lv_snapshot_report_array | length) == 0
+    that: (snapshot_create_lv_snapshot_report_array | length) == 0
     fail_msg: >
       The volume '{{ item.lv }}' in volume group '{{ item.vg }}'
       already has at least one snapshot
-      '{{ create_snapshot_lv_snapshot_report_array[0].lv_name | default('none') }}'
+      '{{ snapshot_create_lv_snapshot_report_array[0].lv_name | default('none') }}'

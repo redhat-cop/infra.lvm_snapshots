@@ -49,9 +49,9 @@
     always:
     - name: Remove Snapshot
       vars:
-        remove_snapshot_set_name: "{{ snapshot_set_name }}"
+        snapshot_remove_set_name: "{{ snapshot_set_name }}"
       ansible.builtin.include_role:
-        name: remove_snapshot
+        name: snapshot_remove
     - name: Cleanup
       vars:
         volumes:

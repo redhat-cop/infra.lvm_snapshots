@@ -41,9 +41,9 @@
 
   - name: Revert to Snapshot
     vars:
-      revert_snapshot_set_name: "{{ snapshot_set_name }}"
+      snapshot_revert_set_name: "{{ snapshot_set_name }}"
     ansible.builtin.include_role:
-      name: revert_snapshot
+      name: snapshot_revert
 
   - name: Verify that the file no longer exist
     block:

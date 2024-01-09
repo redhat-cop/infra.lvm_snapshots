@@ -8,8 +8,8 @@
       size: 8g
       directory: /mnt/test
     snapshot_set_name: demo_snap
-    create_snapshot_snapshot_autoextend_threshold: 80
-    create_snapshot_snapshot_autoextend_percent: 15
+    snapshot_create_snapshot_autoextend_threshold: 80
+    snapshot_create_snapshot_autoextend_percent: 15
   tasks:
   - name: Run pre-test steps
     ansible.builtin.include_tasks: pre-test-tasks.yml
@@ -27,13 +27,13 @@
       ansible.builtin.include_tasks: post-test-tasks.yml
     - name: Print the failure JSON if exists
       ansible.builtin.debug:
-        var: create_snapshot_check_failure_json
-      when: create_snapshot_check_failure_json is defined
+        var: snapshot_create_check_failure_json
+      when: snapshot_create_check_failure_json is defined
     - name: Check results
       ansible.builtin.assert:
         that:
-        - create_snapshot_check_failure_json is defined
-        - create_snapshot_check_failure_json.test_vg
-        - create_snapshot_check_failure_json.test_vg.size == 9646899200
-        - create_snapshot_check_failure_json.test_vg.free == 1056964608
-        - create_snapshot_check_failure_json.test_vg.requested_size == 8589934592
+        - snapshot_create_check_failure_json is defined
+        - snapshot_create_check_failure_json.test_vg
+        - snapshot_create_check_failure_json.test_vg.size == 9646899200
+        - snapshot_create_check_failure_json.test_vg.free == 1056964608
+        - snapshot_create_check_failure_json.test_vg.requested_size == 8589934592

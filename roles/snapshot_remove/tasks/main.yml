@@ -1,12 +1,12 @@
 - name: Calculate the list of snapshots
   block:
   - name: Get list of volumes
-    ansible.builtin.command: "lvs --select 'lv_name =~ {{ remove_snapshot_set_name }}$ && origin != \"\"' --reportformat json "
-    register: remove_snapshot_lvs_response
+    ansible.builtin.command: "lvs --select 'lv_name =~ {{ snapshot_remove_set_name }}$ && origin != \"\"' --reportformat json "
+    register: snapshot_remove_lvs_response
     changed_when: false
   - name: Get LV dict List
     ansible.builtin.set_fact:
-      remove_snapshot_snapshots: "{{ (remove_snapshot_lvs_response.stdout | from_json).report[0].lv }}"
+      snapshot_remove_snapshots: "{{ (snapshot_remove_lvs_response.stdout | from_json).report[0].lv }}"
 
 - name: Remove snapshots
   community.general.lvol:
@@ -15,9 +15,9 @@
     lv: "{{ item.origin }}"
     snapshot: "{{ item.lv_name }}"
     force: true
-  loop: "{{ remove_snapshot_snapshots }}"
+  loop: "{{ snapshot_remove_snapshots }}"
 
 - name: Remove boot backup
   ansible.builtin.file:
-    path: "/root/boot-backup-{{ remove_snapshot_set_name }}.tgz"
+    path: "/root/boot-backup-{{ snapshot_remove_set_name }}.tgz"
     state: absent

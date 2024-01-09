@@ -3,6 +3,6 @@
 
 - name: Create Snapshot
   vars:
-    create_snapshot_volumes: "{{ create_snapshot_check_status.stdout | from_json }}"
+    snapshot_create_volumes: "{{ snapshot_create_check_status.stdout | from_json }}"
   ansible.builtin.include_tasks: create.yml
-  when: not (create_snapshot_check_only | default(false))
+  when: not (snapshot_create_check_only | default(false))

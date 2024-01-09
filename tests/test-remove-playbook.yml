@@ -8,8 +8,8 @@
       size: 1g
       directory: /mnt/test
     snapshot_set_name: demo_snap
-    create_snapshot_snapshot_autoextend_threshold: 80
-    create_snapshot_snapshot_autoextend_percent: 15
+    snapshot_create_snapshot_autoextend_threshold: 80
+    snapshot_create_snapshot_autoextend_percent: 15
   tasks:
   - name: Run pre-test steps
     ansible.builtin.include_tasks: pre-test-tasks.yml
@@ -19,9 +19,9 @@
 
   - name: Remove Snapshot
     vars:
-      remove_snapshot_set_name: "{{ snapshot_set_name }}"
+      snapshot_remove_set_name: "{{ snapshot_set_name }}"
     ansible.builtin.include_role:
-      name: remove_snapshot
+      name: snapshot_remove
 
   - name: Verify that the snapshot no longer exist
     vars:
