@@ -5,6 +5,21 @@ LVM Snapshot Linux Role Release Notes
 .. contents:: Topics
 
 
+v2.0.0
+======
+
+Minor Changes
+-------------
+
+- bigboot - Rename internal variables with role name prefix
+- initramfs - Rename internal variables with role name prefix
+- shrink_lv - Rename internal variables with role name prefix
+
+Breaking Changes / Porting Guide
+--------------------------------
+
+- Split lvm_snapshots role into snapshot_create, snapshot_revert and snapshot_remove
+
 v1.1.2
 ======
 

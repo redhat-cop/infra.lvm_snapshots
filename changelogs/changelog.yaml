@@ -70,3 +70,17 @@ releases:
     fragments:
     - update_links.yml
     release_date: '2023-12-13'
+  2.0.0:
+    changes:
+      breaking_changes:
+      - Split lvm_snapshots role into snapshot_create, snapshot_revert and snapshot_remove
+      minor_changes:
+      - bigboot - Rename internal variables with role name prefix
+      - initramfs - Rename internal variables with role name prefix
+      - shrink_lv - Rename internal variables with role name prefix
+    fragments:
+    - bigboot-internal-variable-names.yml
+    - initramfs-internal-variable-names.yml
+    - shrinklv-internal-variable-names.yml
+    - split-lvm-snapshot_role.yml
+    release_date: '2024-01-10'
