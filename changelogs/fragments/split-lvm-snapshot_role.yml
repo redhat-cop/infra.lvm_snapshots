@@ -1,2 +1,2 @@
 breaking_changes:
-- Split lvm_snapshots role into create_snapshot, revert_snapshot and remove_snapshot
+- Split lvm_snapshots role into snapshot_create, snapshot_revert and snapshot_remove
