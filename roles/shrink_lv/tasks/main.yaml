@@ -35,3 +35,20 @@
   ansible.builtin.file:
     path: /usr/lib/dracut/modules.d/99shrink_lv
     state: absent
+
+- name: Retrieve mount points
+  ansible.builtin.setup:
+    gather_subset:
+    - "!all"
+    - "!min"
+    - mounts
+
+- name: Assert that the filesystem has shrunk
+  ansible.builtin.assert:
+    # yamllint disable-line rule:line-length
+    that: (ansible_facts.mounts | selectattr('device', 'equalto', item.device) | map(attribute='size_total') | join | int) <= (item.size | ansible.builtin.human_to_bytes)
+    fail_msg: >
+      Logical Volume {{ item.device }} was not shrunk to {{ item.size }} as requested
+    success_msg: >
+      Logical Volume {{ item.device }} has been shrunk to {{ item.size }} as requested.
+  loop: "{{ shrink_lv_devices }}"
