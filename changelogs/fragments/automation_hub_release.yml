@@ -1,0 +1,4 @@
+minor_changes:
+  - Add publish to Automation Hub to release workflow
+bugfixes:
+  - Fix release workflow prechecks
