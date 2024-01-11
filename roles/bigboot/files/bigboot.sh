@@ -15,37 +15,7 @@ INCREMENT_BOOT_PARTITION_SIZE_IN_BYTES=
 SHRINK_SIZE_IN_BYTES=
 
 print_help(){
-    echo ""
-    echo "Script to increase the ext4/xfs boot partition in a BIOS system by shifting the adjacent partition to the boot partition by the parametrized size."
-    echo "It expects the device to have enough free space to shift to the right of the adjacent partition, that is towards the end of the device."
-    echo "It only works with ext4 and xfs file systems and supports adjacent partitions as primary or logical partitions and LVM in the partition."
-    echo ""
-    echo "The script determines which partition number is the boot partition by looking for the boot flag."
-    echo "This process won't work with an EFI boot partition because the boot partition that contains the kernel and the initramfs are in a partition that does not have the flag."
-    echo "The parametrized size supports M for MiB and G for GiB. If no units is given, it is interpreted as bytes"
-    echo ""
-    echo "Usage: $(basename "$0") <device_name> <increase_size_with_units>"
-    echo ""
-    echo "Example"
-    echo " Given this device partition:"
-    echo "   Number  Start   End     Size    Type      File system  Flags"
-    echo "           32.3kB  1049kB  1016kB            Free Space"
-    echo "   1       1049kB  11.1GB  11.1GB  primary   ext4         boot"
-    echo "   2       11.1GB  32.2GB  21.1GB  extended"
-    echo "   5       11.1GB  32.2GB  21.1GB  logical   ext4"
-    echo ""
-    echo " Running the command:"
-    echo "   $>$(basename "$0") /dev/vdb 1G"
-    echo " or"
-    echo "   $>$(basename "$0") /dev/vdb 1073741824"
-    echo ""
-    echo " Will increase the boot partition in /dev/vdb by 1G and shift the adjacent partition in the device by the equal amount."
-    echo ""
-    echo "   Number  Start   End     Size    Type      File system  Flags"
-    echo "           32.3kB  1049kB  1016kB            Free Space"
-    echo "   1       1049kB  12.2GB  12.2GB  primary   ext4         boot"
-    echo "   2       12.2GB  32.2GB  20.0GB  extended"
-    echo "   5       12.2GB  32.2GB  20.0GB  logical   ext4"
+    echo "Usage: $(basename $0) -d=<device_name> -s=<increase_size_with_units> -b=<boot_partition_number> -p=<partition_prefix>"
 }
 
 get_device_type(){
@@ -95,7 +65,6 @@ validate_device() {
     fi
     if [[ ! -e "${device}" ]]; then
         echo "Device ${device} not found"
-        print_help
         exit 1
     fi
     ret=$(/usr/sbin/fdisk -l "${device}" 2>&1)
