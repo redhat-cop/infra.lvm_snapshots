@@ -12,9 +12,9 @@ jobs:
   pylint:
     uses: redhat-cop/infra.lvm_snapshots/.github/workflows/pylint.yml@main
   shellcheck:
-      uses: redhat-cop/infra.lvm_snapshots/.github/workflows/shellcheck.yml@main
+    uses: redhat-cop/infra.lvm_snapshots/.github/workflows/shellcheck.yml@main
   codespell:
-      uses: redhat-cop/infra.lvm_snapshots/.github/workflows/codespell.yml@main
+    uses: redhat-cop/infra.lvm_snapshots/.github/workflows/codespell.yml@main
   prechecks:
     needs:
       - ansible-lint
@@ -27,6 +27,8 @@ jobs:
           python -c "assert set([
           '${{ needs.ansible-lint.result }}',
           '${{ needs.pylint.result }}',
+          '${{ needs.shellcheck.result }}',
+          '${{ needs.codespell.result }}',
           ]) == {'success'}"
   infra_release:
     needs:
@@ -62,6 +64,19 @@ jobs:
         run: ansible-galaxy collection install ./infra-lvm_snapshots-${{ steps.vers.outputs.NUM }}.tar.gz -p /home/runner/collections
         shell: bash
         working-directory: ${{ vars.GITHUB_PATH }}
+
+      - name: Publish to Automation Hub
+        run: |
+          cat << EOF > ansible.cfg
+          [galaxy]
+          server_list = rh_automation_hub
+          [galaxy_server.rh_automation_hub]
+          url=https://cloud.redhat.com/api/automation-hub/
+          auth_url=https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+          token=${{ secrets.CONSOLE_API_KEY }}
+          EOF
+          ansible-galaxy collection publish ${{ steps.build.outputs.tar_file }}
+          rm ansible.cfg
 
       - name: Publish to galaxy
         run: ansible-galaxy collection publish --api-key=${{ secrets.GALAXY_INFRA_KEY }} ${{ steps.build.outputs.tar_file }}
