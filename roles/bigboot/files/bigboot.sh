@@ -403,7 +403,7 @@ shift_adjacent_partition() {
         target_partition=$EXTENDED_PARTITION_NUMBER
     fi
     ( sleep 4
-      while t="$(ps -C sfdisk -o times=)"; do
+      while t="$(ps -C sfdisk -o cputime=)"; do
         echo "Bigboot partition move is progressing, please wait! ($t)" >&2
         sleep 120
       done ) &
