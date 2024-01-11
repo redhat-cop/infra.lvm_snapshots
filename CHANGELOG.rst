@@ -5,6 +5,19 @@ LVM Snapshot Linux Role Release Notes
 .. contents:: Topics
 
 
+v2.0.1
+======
+
+Minor Changes
+-------------
+
+- Add publish to Automation Hub to release workflow
+
+Bugfixes
+--------
+
+- Fix release workflow prechecks
+
 v2.0.0
 ======
 
