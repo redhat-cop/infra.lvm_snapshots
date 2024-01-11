@@ -12,9 +12,9 @@ jobs:
   pylint:
     uses: redhat-cop/infra.lvm_snapshots/.github/workflows/pylint.yml@main
   shellcheck:
-      uses: redhat-cop/infra.lvm_snapshots/.github/workflows/shellcheck.yml@main
+    uses: redhat-cop/infra.lvm_snapshots/.github/workflows/shellcheck.yml@main
   codespell:
-      uses: redhat-cop/infra.lvm_snapshots/.github/workflows/codespell.yml@main
+    uses: redhat-cop/infra.lvm_snapshots/.github/workflows/codespell.yml@main
   prechecks:
     needs:
       - ansible-lint
@@ -27,6 +27,8 @@ jobs:
           python -c "assert set([
           '${{ needs.ansible-lint.result }}',
           '${{ needs.pylint.result }}',
+          '${{ needs.shellcheck.result }}',
+          '${{ needs.codespell.result }}',
           ]) == {'success'}"
   infra_release:
     needs:
