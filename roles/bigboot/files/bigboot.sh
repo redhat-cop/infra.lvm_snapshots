@@ -271,7 +271,7 @@ check_available_free_space(){
         pe_size_in_bytes=$(/usr/sbin/lvm pvdisplay "$device" --units b| /usr/bin/awk 'index($0,"PE Size") {print $3}')
         unusable_space_in_pv_in_bytes=$(/usr/sbin/lvm pvdisplay --units B "$device" | /usr/bin/awk 'index($0,"not usable") {print $(NF-1)}'|/usr/bin/numfmt --from=iec)
         total_pe_count_in_vg=$(/usr/sbin/lvm vgs "$volume_group_name" -o pv_pe_count --noheadings)
-        allocated_pe_count_in_vg=$(vgs "$volume_group_name" -o pv_pe_alloc_count --noheadings)
+        allocated_pe_count_in_vg=$(usr/sbin/lvm vgs "$volume_group_name" -o pv_pe_alloc_count --noheadings)
         free_pe_count=$((total_pe_count_in_vg - allocated_pe_count_in_vg))
         # factor in the unusable space to match the required number of free PEs
         required_pe_count=$(((SHRINK_SIZE_IN_BYTES+unusable_space_in_pv_in_bytes)/pe_size_in_bytes))
