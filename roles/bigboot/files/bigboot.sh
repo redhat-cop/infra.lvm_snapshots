@@ -15,7 +15,7 @@ INCREMENT_BOOT_PARTITION_SIZE_IN_BYTES=
 SHRINK_SIZE_IN_BYTES=
 
 print_help(){
-    echo "Usage: $(basename $0) -d=<device_name> -s=<increase_size_with_units> -b=<boot_partition_number> -p=<partition_prefix>"
+    echo "Usage: $(basename "$0") -d=<device_name> -s=<increase_size_with_units> -b=<boot_partition_number> -p=<partition_prefix>"
 }
 
 get_device_type(){
