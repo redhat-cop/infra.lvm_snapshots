@@ -402,6 +402,11 @@ shift_adjacent_partition() {
     if [[ -n "$EXTENDED_PARTITION_NUMBER" ]]; then
         target_partition=$EXTENDED_PARTITION_NUMBER
     fi
+    ( sleep 4
+      while t="$(ps -C sfdisk -o times=)"; do
+        echo "Bigboot partition move is progressing, please wait! ($t)" >&2
+        sleep 120
+      done ) &
     echo "Moving up partition $target_partition in $DEVICE_NAME by $INCREMENT_BOOT_PARTITION_SIZE" >&2
     ret=$(echo "+$INCREMENT_BOOT_PARTITION_SIZE,"| /usr/sbin/sfdisk --move-data "$DEVICE_NAME" -N "$target_partition" --force 2>&1)
     status=$?
