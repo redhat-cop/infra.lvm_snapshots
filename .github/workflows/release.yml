@@ -11,6 +11,8 @@ jobs:
     uses: redhat-cop/infra.lvm_snapshots/.github/workflows/ansible-lint.yml@main
   pylint:
     uses: redhat-cop/infra.lvm_snapshots/.github/workflows/pylint.yml@main
+  pycodestyle:
+    uses: redhat-cop/infra.lvm_snapshots/.github/workflows/pycodestyle.yml@main
   shellcheck:
     uses: redhat-cop/infra.lvm_snapshots/.github/workflows/shellcheck.yml@main
   codespell:
@@ -19,6 +21,7 @@ jobs:
     needs:
       - ansible-lint
       - pylint
+      - pycodestyle
       - shellcheck
       - codespell
     runs-on: ubuntu-latest
@@ -27,6 +30,7 @@ jobs:
           python -c "assert set([
           '${{ needs.ansible-lint.result }}',
           '${{ needs.pylint.result }}',
+          '${{ needs.pycodestyle.result }}',
           '${{ needs.shellcheck.result }}',
           '${{ needs.codespell.result }}',
           ]) == {'success'}"
