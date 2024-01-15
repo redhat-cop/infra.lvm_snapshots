@@ -1,4 +1,37 @@
 #!/bin/bash
+#
+# Script to increase the ext4/xfs boot partition in a BIOS system by shifting
+# the adjacent partition to the boot partition by the parametrized size. It
+# expects the device to have enough free space to shift to the right of the
+# adjacent partition, that is towards the end of the device. It only works
+# with ext4 and xfs file systems and supports adjacent partitions as primary
+# or logical partitions and LVM in the partition.
+#
+# The parametrized size supports M for MiB and G for GiB. If no units is given,
+# it is interpreted as bytes
+#
+# Usage: bigboot.sh -d=<device_name> -s=<increase_size_with_units> -b=<boot_partition_number> -p=<partition_prefix>
+#
+# Example
+#  Given this device partition:
+#    Number  Start   End     Size    Type      File system  Flags
+#            32.3kB  1049kB  1016kB            Free Space
+#    1       1049kB  11.1GB  11.1GB  primary   ext4         boot
+#    2       11.1GB  32.2GB  21.1GB  extended
+#    5       11.1GB  32.2GB  21.1GB  logical   ext4
+#
+#  Running the command:
+#    $>bigboot.sh -d=/dev/sda -s=1G -b=1
+#
+#  Will increase the boot partition in /dev/vdb by 1G and shift the adjacent
+#  partition in the device by the equal amount.
+#
+#    Number  Start   End     Size    Type      File system  Flags
+#            32.3kB  1049kB  1016kB            Free Space
+#    1       1049kB  12.2GB  12.2GB  primary   ext4         boot
+#    2       12.2GB  32.2GB  20.0GB  extended
+#    5       12.2GB  32.2GB  20.0GB  logical   ext4
+#
 
 # Command parameters
 INCREMENT_BOOT_PARTITION_SIZE=
