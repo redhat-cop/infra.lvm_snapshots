@@ -30,12 +30,15 @@ _supported_filesystems = [
     'ext4'
 ]
 
+
 class CheckException(Exception):
     """ Exception wrapper """
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('that', help='What should the script check', type=str, choices=['snapshots', 'resize'])
 parser.add_argument('volumes', help='Volumes JSON array in a string', type=str)
+
 
 def _main():
     args = parser.parse_args()
@@ -157,7 +160,7 @@ def _calc_requested_size(group_info, volume):
 
 def _get_volume_size(vol):
     volume_info_str = subprocess.check_output(
-        [_LVS_COMMAND, "{vg}/{lv}".format(vg=vol['vg'],lv=vol['lv']), '-v', '--units', 'b', '--reportformat', 'json']
+        [_LVS_COMMAND, "{vg}/{lv}".format(vg=vol['vg'], lv=vol['lv']), '-v', '--units', 'b', '--reportformat', 'json']
     )
     volume_info_json = json.loads(volume_info_str)
     volume_info = volume_info_json['report'][0]['lv'][0]
@@ -229,6 +232,7 @@ def _to_printable_volumes(volumes):
             'requested_size': _convert_to_unit_size(volume['normalized_size'])
         } for volume in volumes
     }
+
 
 if __name__ == '__main__':
     _main()
