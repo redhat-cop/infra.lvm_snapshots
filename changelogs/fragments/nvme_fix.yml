@@ -1,0 +1,6 @@
+minor_changes:
+  - Add bigboot progress messages so inpatient operators don't think their server is hung
+bugfixes:
+  - Shorten bigboot.sh usage help message to not exceed the kmsg buffer
+  - Fix bigboot device not found error
+  - Fix vgs not found error

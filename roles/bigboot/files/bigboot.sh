@@ -1,4 +1,37 @@
 #!/bin/bash
+#
+# Script to increase the ext4/xfs boot partition in a BIOS system by shifting
+# the adjacent partition to the boot partition by the parametrized size. It
+# expects the device to have enough free space to shift to the right of the
+# adjacent partition, that is towards the end of the device. It only works
+# with ext4 and xfs file systems and supports adjacent partitions as primary
+# or logical partitions and LVM in the partition.
+#
+# The parametrized size supports M for MiB and G for GiB. If no units is given,
+# it is interpreted as bytes
+#
+# Usage: bigboot.sh -d=<device_name> -s=<increase_size_with_units> -b=<boot_partition_number> -p=<partition_prefix>
+#
+# Example
+#  Given this device partition:
+#    Number  Start   End     Size    Type      File system  Flags
+#            32.3kB  1049kB  1016kB            Free Space
+#    1       1049kB  11.1GB  11.1GB  primary   ext4         boot
+#    2       11.1GB  32.2GB  21.1GB  extended
+#    5       11.1GB  32.2GB  21.1GB  logical   ext4
+#
+#  Running the command:
+#    $>bigboot.sh -d=/dev/sda -s=1G -b=1
+#
+#  Will increase the boot partition in /dev/vdb by 1G and shift the adjacent
+#  partition in the device by the equal amount.
+#
+#    Number  Start   End     Size    Type      File system  Flags
+#            32.3kB  1049kB  1016kB            Free Space
+#    1       1049kB  12.2GB  12.2GB  primary   ext4         boot
+#    2       12.2GB  32.2GB  20.0GB  extended
+#    5       12.2GB  32.2GB  20.0GB  logical   ext4
+#
 
 # Command parameters
 INCREMENT_BOOT_PARTITION_SIZE=
@@ -15,37 +48,7 @@ INCREMENT_BOOT_PARTITION_SIZE_IN_BYTES=
 SHRINK_SIZE_IN_BYTES=
 
 print_help(){
-    echo ""
-    echo "Script to increase the ext4/xfs boot partition in a BIOS system by shifting the adjacent partition to the boot partition by the parametrized size."
-    echo "It expects the device to have enough free space to shift to the right of the adjacent partition, that is towards the end of the device."
-    echo "It only works with ext4 and xfs file systems and supports adjacent partitions as primary or logical partitions and LVM in the partition."
-    echo ""
-    echo "The script determines which partition number is the boot partition by looking for the boot flag."
-    echo "This process won't work with an EFI boot partition because the boot partition that contains the kernel and the initramfs are in a partition that does not have the flag."
-    echo "The parametrized size supports M for MiB and G for GiB. If no units is given, it is interpreted as bytes"
-    echo ""
-    echo "Usage: $(basename "$0") <device_name> <increase_size_with_units>"
-    echo ""
-    echo "Example"
-    echo " Given this device partition:"
-    echo "   Number  Start   End     Size    Type      File system  Flags"
-    echo "           32.3kB  1049kB  1016kB            Free Space"
-    echo "   1       1049kB  11.1GB  11.1GB  primary   ext4         boot"
-    echo "   2       11.1GB  32.2GB  21.1GB  extended"
-    echo "   5       11.1GB  32.2GB  21.1GB  logical   ext4"
-    echo ""
-    echo " Running the command:"
-    echo "   $>$(basename "$0") /dev/vdb 1G"
-    echo " or"
-    echo "   $>$(basename "$0") /dev/vdb 1073741824"
-    echo ""
-    echo " Will increase the boot partition in /dev/vdb by 1G and shift the adjacent partition in the device by the equal amount."
-    echo ""
-    echo "   Number  Start   End     Size    Type      File system  Flags"
-    echo "           32.3kB  1049kB  1016kB            Free Space"
-    echo "   1       1049kB  12.2GB  12.2GB  primary   ext4         boot"
-    echo "   2       12.2GB  32.2GB  20.0GB  extended"
-    echo "   5       12.2GB  32.2GB  20.0GB  logical   ext4"
+    echo "Usage: $(basename "$0") -d=<device_name> -s=<increase_size_with_units> -b=<boot_partition_number> -p=<partition_prefix>"
 }
 
 get_device_type(){
@@ -95,7 +98,6 @@ validate_device() {
     fi
     if [[ ! -e "${device}" ]]; then
         echo "Device ${device} not found"
-        print_help
         exit 1
     fi
     ret=$(/usr/sbin/fdisk -l "${device}" 2>&1)
@@ -129,16 +131,16 @@ parse_flags() {
         do
         case $i in
             -d=*|--device=*)
-            DEVICE_NAME="(${i#*=})"
+            DEVICE_NAME="${i#*=}"
             ;;
             -s=*|--size=*)
-            INCREMENT_BOOT_PARTITION_SIZE="(${i#*=})"
+            INCREMENT_BOOT_PARTITION_SIZE="${i#*=}"
             ;;
             -b=*|--boot=*)
-            BOOT_PARTITION_NUMBER="(${i#*=})"
+            BOOT_PARTITION_NUMBER="${i#*=}"
             ;;
             -p=*|--prefix=*)
-            PARTITION_PREFIX="(${i#*=})"
+            PARTITION_PREFIX="${i#*=}"
             ;;
             -h)
             print_help
@@ -302,7 +304,7 @@ check_available_free_space(){
         pe_size_in_bytes=$(/usr/sbin/lvm pvdisplay "$device" --units b| /usr/bin/awk 'index($0,"PE Size") {print $3}')
         unusable_space_in_pv_in_bytes=$(/usr/sbin/lvm pvdisplay --units B "$device" | /usr/bin/awk 'index($0,"not usable") {print $(NF-1)}'|/usr/bin/numfmt --from=iec)
         total_pe_count_in_vg=$(/usr/sbin/lvm vgs "$volume_group_name" -o pv_pe_count --noheadings)
-        allocated_pe_count_in_vg=$(vgs "$volume_group_name" -o pv_pe_alloc_count --noheadings)
+        allocated_pe_count_in_vg=$(usr/sbin/lvm vgs "$volume_group_name" -o pv_pe_alloc_count --noheadings)
         free_pe_count=$((total_pe_count_in_vg - allocated_pe_count_in_vg))
         # factor in the unusable space to match the required number of free PEs
         required_pe_count=$(((SHRINK_SIZE_IN_BYTES+unusable_space_in_pv_in_bytes)/pe_size_in_bytes))
@@ -433,6 +435,11 @@ shift_adjacent_partition() {
     if [[ -n "$EXTENDED_PARTITION_NUMBER" ]]; then
         target_partition=$EXTENDED_PARTITION_NUMBER
     fi
+    ( sleep 4
+      while t="$(ps -C sfdisk -o cputime=)"; do
+        echo "Bigboot partition move is progressing, please wait! ($t)" >&2
+        sleep 120
+      done ) &
     echo "Moving up partition $target_partition in $DEVICE_NAME by $INCREMENT_BOOT_PARTITION_SIZE" >&2
     ret=$(echo "+$INCREMENT_BOOT_PARTITION_SIZE,"| /usr/sbin/sfdisk --move-data "$DEVICE_NAME" -N "$target_partition" --force 2>&1)
     status=$?
