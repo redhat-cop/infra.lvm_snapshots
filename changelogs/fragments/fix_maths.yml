@@ -1,0 +1,5 @@
+bugfixes:
+  - Round down requested size to multiple of extent size
+  - Use sectors with sfdisk
+  - Clean up bad math in bigboot.sh
+
