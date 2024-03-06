@@ -1,0 +1,2 @@
+bugfixes:
+  - Fix bigboot fail when autoactivation property not set
