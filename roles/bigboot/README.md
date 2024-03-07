@@ -11,12 +11,13 @@ Finally, there is a copy of the [`sfdisk`](https://man7.org/linux/man-pages/man8
 
 ## Role Variables
 
-### `bigboot_size`
+### `bigboot_size` (String)
 
-The variable `bigboot_size` sets the target size of the boot partition after the role has completed.
-The value can be either in bytes or with optional single letter suffix (1024 bases).
-See `Unit options` type `iec` of [`numfmt`](https://man7.org/linux/man-pages/man1/numfmt.1.html)
+The variable `bigboot_size` specifies by how much the size of the boot partition should be increased. The value can be either in bytes or with optional single letter suffix (1024 bases). See unit options type `iec` of [`numfmt`](https://man7.org/linux/man-pages/man1/numfmt.1.html).
 
+> **Note**
+>
+> The effective `bigboot_size` may be slightly less than the specified value as the role will round down to the nearest multiple of the extent size of the LVM physical volume in the partition above the boot partition.
 
 ## Example of a playbook to run the role
 The following yaml is an example of a playbook that runs the role against a group of hosts named `rhel` and increasing the size of its boot partition by 1G.
