@@ -4,6 +4,24 @@ LVM Snapshot Linux Role Release Notes
 
 .. contents:: Topics
 
+v2.0.2
+======
+
+Minor Changes
+-------------
+
+- Add bigboot progress messages so inpatient operators don't think their server is hung
+
+Bugfixes
+--------
+
+- Clean up bad math in bigboot.sh
+- Fix bigboot device not found error
+- Fix bigboot fail when autoactivation property not set
+- Fix vgs not found error
+- Round down requested size to multiple of extent size
+- Shorten bigboot.sh usage help message to not exceed the kmsg buffer
+- Use sectors with sfdisk
 
 v2.0.1
 ======
@@ -106,3 +124,4 @@ Minor Changes
 
 v1.0.0
 ======
+
