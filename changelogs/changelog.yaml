@@ -93,3 +93,21 @@ releases:
     fragments:
     - automation_hub_release.yml
     release_date: '2024-01-11'
+  2.0.2:
+    changes:
+      bugfixes:
+      - Clean up bad math in bigboot.sh
+      - Fix bigboot device not found error
+      - Fix bigboot fail when autoactivation property not set
+      - Fix vgs not found error
+      - Round down requested size to multiple of extent size
+      - Shorten bigboot.sh usage help message to not exceed the kmsg buffer
+      - Use sectors with sfdisk
+      minor_changes:
+      - Add bigboot progress messages so inpatient operators don't think their server
+        is hung
+    fragments:
+    - autoactivate.yml
+    - fix_maths.yml
+    - nvme_fix.yml
+    release_date: '2024-03-07'
