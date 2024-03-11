@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  author: Ygal Blum, Bob Mader
+  description: Create a defined set of LVM snapshot volumes
+  company: Red Hat
+  license: MIT
+  min_ansible_version: "2.14"
+  platforms:
+    - name: EL
+      versions:
+        - all
+  galaxy_tags: []
+dependencies: []
+...
