@@ -40,6 +40,7 @@ BOOT_PARTITION_NUMBER=
 PARTITION_PREFIX=
 
 # Script parameters
+NOLOCKING=
 ADJACENT_PARTITION_NUMBER=
 BOOT_FS_TYPE=
 EXTENDED_PARTITION_TYPE=extended
@@ -184,6 +185,22 @@ ensure_extendable_fs_type() {
     BOOT_FS_TYPE=$ret
 }
 
+get_nolocking_opts() {
+    local lvm_version
+    lvm_version="$(/usr/sbin/lvm version | grep 'LVM version:')"
+    status=$?
+    if [[ $status -ne 0 ]]; then
+        echo "Error getting LVM version '$lvm_version'"
+        exit $status
+    fi
+    # true when LVM version is older than 2.03
+    if echo -e "${lvm_version##*:}\n2.03" | sed 's/^ *//' | sort -V -C; then
+      NOLOCKING='--config=global{locking_type=0}'
+    else
+      NOLOCKING='--nolocking'
+    fi
+}
+
 get_successive_partition_number() {
     boot_line_number=$(/usr/sbin/parted -m "$DEVICE_NAME" print | /usr/bin/sed -n '/^'"$BOOT_PARTITION_NUMBER"':/ {=}')
     status=$?
@@ -214,6 +231,7 @@ get_successive_partition_number() {
 init_variables() {
     parse_flags "$@"
     validate_parameters
+    get_nolocking_opts
     get_successive_partition_number
 }
 
@@ -299,7 +317,7 @@ check_device() {
 evict_end_PV() {
     local device="${DEVICE_NAME}${PARTITION_PREFIX}${ADJACENT_PARTITION_NUMBER}"
     local shrinking_start_PE=$1
-    ret=$(/usr/sbin/lvm pvmove --alloc anywhere "$device":"$shrinking_start_PE"-  2>&1)
+    ret=$(/usr/sbin/lvm pvmove "$NOLOCKING" --alloc anywhere "$device":"$shrinking_start_PE"-  2>&1)
     status=$?
     if [[ $status -ne 0 ]]; then
         echo "Failed to evict PEs in PV $device: $ret"
@@ -313,7 +331,7 @@ shrink_physical_volume() {
     pv_new_size_in_bytes=$((partition_size_in_bytes-SHRINK_SIZE_IN_BYTES))
     shrink_start_PE=$((LVM2_PV_PE_COUNT-1-(SHRINK_SIZE_IN_BYTES/LVM2_VG_EXTENT_SIZE)))
     # Test mode pvresize
-    ret=$(/usr/sbin/lvm pvresize --setphysicalvolumesize "$pv_new_size_in_bytes"B -t "$device" -y 2>&1)
+    ret=$(/usr/sbin/lvm pvresize "$NOLOCKING" --setphysicalvolumesize "$pv_new_size_in_bytes"B -t "$device" -y 2>&1)
     status=$?
     if [[ $status -ne 0 ]]; then
         if [[ $status -eq 5 ]]; then
@@ -326,7 +344,7 @@ shrink_physical_volume() {
         fi
     fi
     echo "Shrinking PV $device to $pv_new_size_in_bytes bytes" >&2
-    ret=$(/usr/sbin/lvm pvresize --setphysicalvolumesize "$pv_new_size_in_bytes"B "$device" -y 2>&1)
+    ret=$(/usr/sbin/lvm pvresize "$NOLOCKING" --setphysicalvolumesize "$pv_new_size_in_bytes"B "$device" -y 2>&1)
     status=$?
     if [[ $status -ne 0 ]]; then
             echo "Failed to resize PV $device during retry: $ret"

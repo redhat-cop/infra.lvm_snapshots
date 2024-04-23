@@ -69,7 +69,7 @@ function parse_uuid() {
 }
 
 function shrink_volume() {
-    /usr/sbin/lvm lvreduce --resizefs -L "$2b" "$1"
+    /usr/sbin/lvm lvreduce "$NOLOCKING" --resizefs -L "$2"b "$1"
     return $?
 }
 
@@ -198,12 +198,29 @@ function parse_entry() {
     expected_size="${strarr[1]}"
 }
 
+function get_nolocking_opts() {
+    local lvm_version
+    lvm_version="$(/usr/sbin/lvm version | grep 'LVM version:')"
+    status=$?
+    if [[ $status -ne 0 ]]; then
+        echo "Error getting LVM version '$lvm_version'"
+        exit $status
+    fi
+    # true when LVM version is older than 2.03
+    if echo -e "${lvm_version##*:}\n2.03" | sed 's/^ *//' | sort -V -C; then
+      NOLOCKING='--config=global{locking_type=0}'
+    else
+      NOLOCKING='--nolocking'
+    fi
+}
+
 function main() {
 
     local -a entries=()
     local run_status=0
 
     parse_flags "$@"
+    get_nolocking_opts
 
     for entry in "${entries[@]}"
     do
