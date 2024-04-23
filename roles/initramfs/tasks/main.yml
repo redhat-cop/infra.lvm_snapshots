@@ -28,13 +28,6 @@
     reboot_timeout: "{{ initramfs_reboot_timeout }}"
 
 - name: Restore previous initramfs
-  ansible.builtin.copy:
-    remote_src: true
-    src: /boot/initramfs-{{ initramfs_kernel_version }}.img.{{ initramfs_backup_extension }}
-    dest: /boot/initramfs-{{ initramfs_kernel_version }}.img
-    mode: "0600"
-
-- name: Remove initramfs backup file
-  ansible.builtin.file:
-    path: /boot/initramfs-{{ initramfs_kernel_version }}.img.{{ initramfs_backup_extension }}
-    state: absent
+   # yamllint disable-line rule:line-length
+  ansible.builtin.command: '/usr/bin/mv -f /boot/initramfs-{{ initramfs_kernel_version }}.img.{{ initramfs_backup_extension }} /boot/initramfs-{{ initramfs_kernel_version }}.img'
+  changed_when: true
