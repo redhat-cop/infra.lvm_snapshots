@@ -1,0 +1,2 @@
+bugfixes:
+  - Fix potential space exhaustion when restoring previous initramfs
