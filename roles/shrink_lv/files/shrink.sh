@@ -200,14 +200,14 @@ function parse_entry() {
 
 function get_nolocking_opts() {
     local lvm_version
-    lvm_version="$(/usr/sbin/lvm version | grep 'LVM version:')"
+    lvm_version="$(/usr/sbin/lvm version | /usr/bin/grep 'LVM version:')"
     status=$?
     if [[ $status -ne 0 ]]; then
         echo "Error getting LVM version '$lvm_version'"
         exit $status
     fi
     # true when LVM version is older than 2.03
-    if echo -e "${lvm_version##*:}\n2.03" | sed 's/^ *//' | sort -V -C; then
+    if echo -e "${lvm_version##*:}\n2.03" | /usr/bin/sed 's/^ *//' | /usr/bin/sort -V -C; then
       NOLOCKING='--config=global{locking_type=0}'
     else
       NOLOCKING='--nolocking'
