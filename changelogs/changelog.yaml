@@ -111,3 +111,14 @@ releases:
     - fix_maths.yml
     - nvme_fix.yml
     release_date: '2024-03-07'
+  2.0.3:
+    changes:
+      bugfixes:
+      - Fix how locking is disabled for newer LVM versions
+      - Fix missing role metadata
+      - Fix potential space exhaustion when restoring previous initramfs
+    fragments:
+    - autoactivate.yml
+    - fix_image_copy.yml
+    - fix_lvm_config.yml
+    release_date: '2024-04-25'

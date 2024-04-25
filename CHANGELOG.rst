@@ -4,6 +4,16 @@ LVM Snapshot Linux Role Release Notes
 
 .. contents:: Topics
 
+v2.0.3
+======
+
+Bugfixes
+--------
+
+- Fix how locking is disabled for newer LVM versions
+- Fix missing role metadata
+- Fix potential space exhaustion when restoring previous initramfs
+
 v2.0.2
 ======
 
