@@ -1,0 +1,2 @@
+bugfixes:
+  - Fix how locking is disabled for newer LVM versions
