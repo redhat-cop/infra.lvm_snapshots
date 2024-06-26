@@ -17,4 +17,10 @@
     bigboot_boot_device_partition_prefix: "{{ bigboot_boot_partition_name[(bigboot_boot_disk | length) : -1] }}"
     bigboot_boot_partition_number: "{{ bigboot_boot_partition_name[-1] }}"
     bigboot_boot_device_name: "/dev/{{ bigboot_boot_disk }}"
-    bigboot_boot_device_original_size: "{{ bigboot_boot_mount_entry.size_total | int }}"
+    bigboot_boot_fs_original_size: "{{ bigboot_boot_mount_entry.size_total | int }}"
+    bigboot_boot_device_sectors: "{{ ansible_facts.devices[bigboot_boot_disk].partitions[bigboot_boot_partition_name].sectors | int }}"
+    bigboot_boot_device_sectorsize: "{{ ansible_facts.devices[bigboot_boot_disk].partitions[bigboot_boot_partition_name].sectorsize | int }}"
+
+- name: Calculate boot device current size
+  ansible.builtin.set_fact:
+    bigboot_boot_device_bytes: "{{ bigboot_boot_device_sectors | int * bigboot_boot_device_sectorsize | int }}"
