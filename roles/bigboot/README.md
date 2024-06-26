@@ -11,7 +11,7 @@ Finally, there is a copy of the [`sfdisk`](https://man7.org/linux/man-pages/man8
 
 > **WARNING!**
 >
-> All blocks of the partition above the boot partition are copied using `sfdisk` during the reboot and this can take serveral minutes or more depending on the size of that partition. The bigboot script periodically outputs progress messages to the system console to make it clear that the system is not in a "hung" state, but these progress messages may not be seen if `rhgb` or `quiet` kernel arguments are set. If the system is reset while the blocks are being copied, the partition will be irrcoverably corrupted. Do not assume the system is hung or force a reset during the bigboot reboot!
+> All blocks of the partition above the boot partition are copied using `sfdisk` during the reboot and this can take several minutes or more depending on the size of that partition. The bigboot script periodically outputs progress messages to the system console to make it clear that the system is not in a "hung" state, but these progress messages may not be seen if `rhgb` or `quiet` kernel arguments are set. If the system is reset while the blocks are being copied, the partition will be irrcoverably corrupted. Do not assume the system is hung or force a reset during the bigboot reboot!
 
 To learn more about how bigboot works, check out this [video](https://people.redhat.com/bmader/bigboot-demo.mp4).
 
