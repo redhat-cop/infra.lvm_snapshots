@@ -7,11 +7,6 @@
     - mounts
     - devices
 
-- name: Validate bigboot_size is not empty
-  ansible.builtin.assert:
-    that: bigboot_size | length >0
-    fail_msg: "bigboot_size is empty"
-
 - name: Validate initramfs preflight
   ansible.builtin.include_role:
     name: initramfs
@@ -21,46 +16,70 @@
   ansible.builtin.include_tasks:
     file: get_boot_device_info.yml
 
-- name: Copy extend boot dracut module
-  ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: /usr/lib/dracut/modules.d/99extend_boot/
-    mode: "0554"
-  loop:
-  - bigboot.sh
-  - module-setup.sh
-  - sfdisk.static
-
-- name: Resolve and copy the shrink-start script
-  ansible.builtin.template:
-    src: increase-boot-partition.sh.j2
-    dest: /usr/lib/dracut/modules.d/99extend_boot/increase-boot-partition.sh
-    mode: '0554'
-
-- name: Create the initramfs and reboot to run the module
-  vars:
-    initramfs_add_modules: "extend_boot"
-  ansible.builtin.include_role:
-    name: initramfs
-
-- name: Remove dracut extend boot module
-  ansible.builtin.file:
-    path: /usr/lib/dracut/modules.d/99extend_boot
-    state: absent
-
-- name: Retrieve mount points
-  ansible.builtin.setup:
-    gather_subset:
-    - "!all"
-    - "!min"
-    - mounts
-
-- name: Capture boot device new size
+- name: Convert bigboot_partition_size to bytes
   ansible.builtin.set_fact:
-    bigboot_boot_device_new_size: "{{ (ansible_facts.mounts | selectattr('mount', 'equalto', '/boot') | first).size_total | int }}"
+    bigboot_partition_size_bytes: "{{ bigboot_partition_size | ansible.builtin.human_to_bytes }}"
+  when: bigboot_partition_size | default('', true) | length > 0
 
-- name: Validate boot partition new size
-  ansible.builtin.assert:
-    that:
-    - bigboot_boot_device_new_size != bigboot_boot_device_original_size
-    fail_msg: "Boot partition size '{{ bigboot_boot_device_new_size }}' did not change"
+- name: Convert bigboot_size to bytes
+  ansible.builtin.set_fact:
+    bigboot_size_bytes: "{{ bigboot_size | ansible.builtin.human_to_bytes }}"
+  when: bigboot_partition_size_bytes is undefined and bigboot_size | default('', true) | length > 0
+
+- name: Calculate bigboot increase
+  ansible.builtin.set_fact:
+    bigboot_increase_bytes: "{{ bigboot_partition_size_bytes | default(bigboot_boot_device_bytes, true) | int -
+        bigboot_boot_device_bytes | int +
+        bigboot_size_bytes | default('0', true) | int }}"
+
+- name: Do bigboot tasks if increase requested
+  when: bigboot_increase_bytes | int > 0
+  block:
+  - name: Copy extend boot dracut module
+    ansible.builtin.copy:
+      src: "{{ item }}"
+      dest: /usr/lib/dracut/modules.d/99extend_boot/
+      mode: "0554"
+    loop:
+    - bigboot.sh
+    - module-setup.sh
+    - sfdisk.static
+
+  - name: Resolve and copy the shrink-start script
+    ansible.builtin.template:
+      src: increase-boot-partition.sh.j2
+      dest: /usr/lib/dracut/modules.d/99extend_boot/increase-boot-partition.sh
+      mode: '0554'
+
+  - name: Create the initramfs and reboot to run the module
+    vars:
+      initramfs_add_modules: "extend_boot"
+    ansible.builtin.include_role:
+      name: initramfs
+
+  - name: Remove dracut extend boot module
+    ansible.builtin.file:
+      path: /usr/lib/dracut/modules.d/99extend_boot
+      state: absent
+
+  - name: Retrieve mount points
+    ansible.builtin.setup:
+      gather_subset:
+      - "!all"
+      - "!min"
+      - mounts
+
+  - name: Capture boot filesystem new size
+    ansible.builtin.set_fact:
+      bigboot_boot_fs_new_size: "{{ (ansible_facts.mounts | selectattr('mount', 'equalto', '/boot') | first).size_total | int }}"
+
+  - name: Validate boot filesystem new size
+    ansible.builtin.assert:
+      that:
+      - bigboot_boot_fs_new_size != bigboot_boot_fs_original_size
+      fail_msg: "Boot filesystem size '{{ bigboot_boot_fs_new_size }}' did not change"
+
+- name: Validate increase requested
+  ansible.builtin.debug:
+    msg: "Nothing to do! Boot partition already equal to or greater than requested size."
+  when: bigboot_increase_bytes | int <= 0
