@@ -24,7 +24,7 @@ The variable `bigboot_partition_size` specifies the minimum required size of the
 
 This variable is deprecated and will be removed in a future release. Use `bigboot_partition_size` instead.
 
-The variable `bigboot_size` specifies by how much the size of the boot partition is to be increased. The value can be either in bytes or with optional single letter suffix (1024 bases) using [human_to_bytes](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/human_to_bytes_filter.html) filter plugin. 
+The variable `bigboot_size` specifies by how much the size of the boot partition is to be increased. The value can be either in bytes or with optional single letter suffix (1024 bases) using [human_to_bytes](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/human_to_bytes_filter.html) filter plugin.
 
 > **Note**
 >

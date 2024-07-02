@@ -40,5 +40,9 @@
   ansible.builtin.assert:
     that:
     - bigboot_boot_fs_new_size != bigboot_boot_fs_original_size
-    fail_msg: "Boot filesystem size '{{ bigboot_boot_fs_new_size }}' did not change"
-    success_msg: "Boot filesystem size is now {{ bigboot_boot_fs_new_size | int | human_readable }} ({{ (bigboot_boot_fs_new_size | int - bigboot_boot_fs_original_size | int) | human_readable }} increase)"
+    fail_msg: >-
+      Boot filesystem size '{{ bigboot_boot_fs_new_size }}' did not change
+    success_msg: >-
+      Boot filesystem size is now
+      {{ bigboot_boot_fs_new_size | int | human_readable }}
+      ({{ (bigboot_boot_fs_new_size | int - bigboot_boot_fs_original_size | int) | human_readable }} increase)

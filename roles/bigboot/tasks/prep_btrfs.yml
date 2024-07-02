@@ -9,5 +9,11 @@
 
 - name: Btrfs volume reduce
   ansible.builtin.command:
-    cmd: "/usr/sbin/btrfs filesystem resize 1:-{{ bigboot_increase_bytes }} {{ bigboot_next_partition_btrfs }}"
+    cmd: >-
+      /usr/sbin/btrfs
+      filesystem resize
+      1:-{{ bigboot_increase_bytes }}
+      {{ bigboot_next_partition_btrfs }}
+  when: bigboot_increase_bytes | int > 0
+  changed_when: true
   register: resize_cmd

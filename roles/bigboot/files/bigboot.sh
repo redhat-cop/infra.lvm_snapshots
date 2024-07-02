@@ -40,7 +40,7 @@ if [[ ! $boot_size_increase_in_bytes -gt 0 ]]; then
 fi
 
 # Calculate device and partition details
-boot_disk_device="/dev/$(/usr/bin/basename $(readlink -f /sys/class/block/"$boot_part_name"/..))"
+boot_disk_device=/dev/"$(/usr/bin/basename "$(readlink -f /sys/class/block/"$boot_part_name"/..)")"
 boot_part_num="$(</sys/class/block/"$boot_part_name"/partition)"
 next_part_num="$(</sys/class/block/"$next_part_name"/partition)"
 next_part_start="$(($(</sys/class/block/"$next_part_name"/start)*512))"
@@ -65,8 +65,7 @@ fi
 
 # Shrink next partition
 echo "$name: Shrinking partition $next_part_name by $boot_size_increase_in_bytes"
-ret=$(echo Yes | /usr/sbin/parted "$boot_disk_device" ---pretend-input-tty unit B resizepart "$next_part_num" "$next_part_new_end" 2>&1)
-if [[ $? -ne 0 ]]; then
+if ! ret=$(echo Yes | /usr/sbin/parted "$boot_disk_device" ---pretend-input-tty unit B resizepart "$next_part_num" "$next_part_new_end" 2>&1); then 
   echo "$name: Failed shrinking partition $next_part_name: $ret"
   exit 1
 fi
@@ -80,16 +79,14 @@ fi
 
 # Shift next partition
 echo "$name: Moving up partition $next_part_name by $boot_size_increase_in_bytes"
-ret=$(echo "+$((boot_size_increase_in_bytes/512))," | /usr/sbin/sfdisk --move-data "$boot_disk_device" -N "$next_part_num" --force 2>&1)
-if [[ $? -ne 0 ]]; then
+if ! ret=$(echo "+$((boot_size_increase_in_bytes/512))," | /usr/sbin/sfdisk --move-data "$boot_disk_device" -N "$next_part_num" --force 2>&1); then
   echo "$name: Failed moving up partition $next_part_name: $ret"
   exit 1
 fi
 
 # Increase boot partition
 echo "$name: Increasing boot partition $boot_part_name by $boot_size_increase_in_bytes"
-ret=$(echo "- +" | /usr/sbin/sfdisk "$boot_disk_device" -N "$boot_part_num" --no-reread --force 2>&1)
-if [[ $? -ne 0 ]]; then
+if ! ret=$(echo "- +" | /usr/sbin/sfdisk "$boot_disk_device" -N "$boot_part_num" --no-reread --force 2>&1); then
   echo "$name: Failed increasing boot partition $boot_part_name: $ret"
   exit 1
 fi
@@ -104,8 +101,7 @@ echo "$name: Updating kernel partition table"
 echo "$name: Growing the /boot $boot_fs_type filesystem"
 if [[ "$boot_fs_type" =~ ^ext[2-4]$ ]]; then
   /usr/sbin/e2fsck -fy "/dev/$boot_part_name"
-  /usr/sbin/resize2fs "/dev/$boot_part_name"
-  if [[ $? -ne 0 ]]; then
+  if ! /usr/sbin/resize2fs "/dev/$boot_part_name"; then
     echo "$name: resize2fs error while growing the /boot filesystem"
     exit 1
   fi
