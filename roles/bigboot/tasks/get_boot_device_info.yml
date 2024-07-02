@@ -1,6 +1,6 @@
 - name: Find the boot mount entry
   ansible.builtin.set_fact:
-    bigboot_boot_mount_entry: "{{ ansible_facts.mounts | selectattr('mount', 'equalto', '/boot') | first | default(omit, true) }}"
+    bigboot_boot_mount_entry: "{{ ansible_facts.mounts | selectattr('mount', 'equalto', '/boot') | first | default('', true) }}"
 
 - name: Validate boot mount entry
   ansible.builtin.assert:
