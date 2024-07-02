@@ -31,9 +31,9 @@
 
 - name: Find the next partition
   ansible.builtin.set_fact:
-    bigboot_next_partition_name: "{{ ansible_loop.nextitem.key | default(omit, true) }}"
-  with_dict: "{{ ansible_facts.devices[bigboot_boot_disk].partitions }}"
-  when: item.key == bigboot_boot_partition_name
+    bigboot_next_partition_name: "{{ ansible_loop.nextitem.0 | default(omit, true) }}"
+  when: item.0 == bigboot_boot_partition_name
+  loop: "{{ ansible_facts.devices[bigboot_boot_disk].partitions | dictsort }}"
   loop_control:
     extended: true
 
