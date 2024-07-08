@@ -48,6 +48,7 @@
     bigboot_next_partition_btrfs: "{{ ansible_facts.mounts | selectattr('device', 'equalto', '/dev/' + bigboot_next_partition_name) |
         selectattr('fstype', 'equalto', 'btrfs') | map(attribute='mount') | first | default(omit, true) }}"
     bigboot_next_partition_vg: "{{ ansible_facts.lvm.pvs['/dev/' + bigboot_next_partition_name].vg | default(omit, true) }}"
+    bigboot_next_partition_type_checked: true
 
 - name: Validate next partition type
   ansible.builtin.assert:
