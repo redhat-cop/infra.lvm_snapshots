@@ -1,0 +1,19 @@
+- name: Find Btrfs sector size
+  ansible.builtin.slurp:
+    src: "/sys/fs/btrfs/{{ ansible_facts.mounts | selectattr('mount', 'equalto', bigboot_next_partition_btrfs) | map(attribute='uuid') | first }}/sectorsize"
+  register: sectorsize
+
+- name: Align bigboot increase to sector size
+  ansible.builtin.set_fact:
+    bigboot_increase_bytes: "{{ bigboot_increase_bytes | int - (bigboot_increase_bytes | int % sectorsize.content | b64decode | int) }}"
+
+- name: Btrfs volume reduce
+  ansible.builtin.command:
+    cmd: >-
+      /usr/sbin/btrfs
+      filesystem resize
+      1:-{{ bigboot_increase_bytes }}
+      {{ bigboot_next_partition_btrfs }}
+  when: bigboot_increase_bytes | int > 0
+  changed_when: true
+  register: resize_cmd

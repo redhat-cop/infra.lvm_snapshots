@@ -1,0 +1,48 @@
+- name: Copy dracut pre-mount hook files
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /usr/lib/dracut/modules.d/99extend_boot/
+    mode: "0554"
+  loop:
+  - bigboot.sh
+  - module-setup.sh
+  - sfdisk.static
+
+- name: Resolve and copy pre-mount hook wrapper script
+  ansible.builtin.template:
+    src: increase-boot-partition.sh.j2
+    dest: /usr/lib/dracut/modules.d/99extend_boot/increase-boot-partition.sh
+    mode: '0554'
+
+- name: Create the initramfs and reboot to run the module
+  vars:
+    initramfs_add_modules: "extend_boot"
+  ansible.builtin.include_role:
+    name: initramfs
+
+- name: Remove dracut extend boot module
+  ansible.builtin.file:
+    path: /usr/lib/dracut/modules.d/99extend_boot
+    state: absent
+
+- name: Retrieve mount points
+  ansible.builtin.setup:
+    gather_subset:
+    - "!all"
+    - "!min"
+    - mounts
+
+- name: Capture boot filesystem new size
+  ansible.builtin.set_fact:
+    bigboot_boot_fs_new_size: "{{ (ansible_facts.mounts | selectattr('mount', 'equalto', '/boot') | first).size_total | int }}"
+
+- name: Validate boot filesystem new size
+  ansible.builtin.assert:
+    that:
+    - bigboot_boot_fs_new_size != bigboot_boot_fs_original_size
+    fail_msg: >-
+      Boot filesystem size '{{ bigboot_boot_fs_new_size }}' did not change
+    success_msg: >-
+      Boot filesystem size is now
+      {{ bigboot_boot_fs_new_size | int | human_readable }}
+      ({{ (bigboot_boot_fs_new_size | int - bigboot_boot_fs_original_size | int) | human_readable }} increase)

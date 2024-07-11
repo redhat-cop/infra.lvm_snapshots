@@ -1,25 +1,17 @@
 #!/bin/bash
 
-activate_volume_groups(){
-    for vg in `/usr/sbin/lvm vgs -o name --noheading 2>/dev/null`; do
-        /usr/sbin/lvm vgchange -ay $vg
-    done
-}
-
 main() {
-    name=$(basename "$0")
     start=$(/usr/bin/date +%s)
-    activate_volume_groups
     # run bigboot.sh to increase boot partition and file system size
-    ret=$(sh /usr/bin/bigboot.sh -d="{{ bigboot_boot_device_name }}" -s="{{ bigboot_increase_bytes }}" -b="{{ bigboot_boot_partition_number }}" -p="{{ bigboot_boot_device_partition_prefix }}" 2>/dev/kmsg)
+    sh /usr/bin/bigboot.sh "{{ bigboot_boot_partition_name }}" "{{ bigboot_next_partition_name }}" "{{ bigboot_increase_bytes }}"
     status=$?
     end=$(/usr/bin/date +%s)
     # write the log file
     if [[ $status -eq 0 ]]; then
-        echo "[$name] Boot partition {{ bigboot_boot_device_name }} successfully increased by {{ bigboot_increase_bytes }} ("$((end-start))" seconds) " >/dev/kmsg
+        echo "Boot partition {{ bigboot_boot_partition_name }} successfully increased by {{ bigboot_increase_bytes }} ("$((end-start))" seconds)"
     else
-        echo "[$name] Failed to extend boot partition: $ret ("$((end-start))" seconds)" >/dev/kmsg
+        echo "Failed to extend boot partition ("$((end-start))" seconds)"
     fi
 }
 
-main "$0"
+main "$0" >&2
