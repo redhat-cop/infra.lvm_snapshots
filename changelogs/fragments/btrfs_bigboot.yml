@@ -1,5 +1,0 @@
-major_changes:
-- add bigboot support for Btrfs next partition
-minor_changes:
-- show console log output from bigboot even if quiet kernel arg is set
-- do bigboot LVM changes with Ansible instead of pre-mount hook

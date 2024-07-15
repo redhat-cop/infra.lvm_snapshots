@@ -4,6 +4,21 @@ LVM Snapshot Linux Role Release Notes
 
 .. contents:: Topics
 
+v2.1.0
+======
+
+Major Changes
+-------------
+
+- add bigboot support for Btrfs next partition
+
+Minor Changes
+-------------
+
+- do bigboot LVM changes with Ansible instead of pre-mount hook
+- new bigboot_partition_size variable to make bigboot role more idempotent
+- show console log output from bigboot even if quiet kernel arg is set
+
 v2.0.3
 ======
 
