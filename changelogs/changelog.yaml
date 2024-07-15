@@ -122,3 +122,15 @@ releases:
     - fix_image_copy.yml
     - fix_lvm_config.yml
     release_date: '2024-04-25'
+  2.1.0:
+    changes:
+      major_changes:
+      - add bigboot support for Btrfs next partition
+      minor_changes:
+      - do bigboot LVM changes with Ansible instead of pre-mount hook
+      - new bigboot_partition_size variable to make bigboot role more idempotent
+      - show console log output from bigboot even if quiet kernel arg is set
+    fragments:
+    - btrfs_bigboot.yml
+    - more_idempotent.yml
+    release_date: '2024-07-15'
