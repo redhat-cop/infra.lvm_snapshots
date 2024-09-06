@@ -6,7 +6,7 @@ The role is designed to be internal for this collection and support the automati
 
 ## Contents
 
-To allow fast fail, the role provides a [`preflight.yml`](./tasks/preflight.yml) tasks file to that should be included early in the play that ultimately includes the [`main`](./tasks/main.yml) role that actually reboots the host. Refer the usage section below for example.
+To allow fast fail, the role provides a [`preflight.yml`](./tasks/preflight.yml) tasks file that should be included early in the play that ultimately includes the [`main`](./tasks/main.yml) role that actually reboots the host. Refer the usage section below for example.
 
 ## Role Variables
 
