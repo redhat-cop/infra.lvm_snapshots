@@ -17,7 +17,6 @@
   register: vg_extent_size
   check_mode: false
 
-
 - name: Align bigboot increase to extent size
   ansible.builtin.set_fact:
     bigboot_increase_bytes: "{{ bigboot_increase_bytes | int - (bigboot_increase_bytes | int % vg_extent_size.stdout | int) }}"
