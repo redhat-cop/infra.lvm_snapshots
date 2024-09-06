@@ -15,6 +15,8 @@
       -o vg_extent_size {{ bigboot_next_partition_vg }}
   changed_when: false
   register: vg_extent_size
+  check_mode: false
+
 
 - name: Align bigboot increase to extent size
   ansible.builtin.set_fact:
