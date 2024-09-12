@@ -15,6 +15,7 @@
     cmd: /sbin/grubby --default-kernel
   register: initramfs_grubby_rc
   changed_when: false
+  check_mode: false
 
 - name: Parse default kernel version
   ansible.builtin.set_fact:

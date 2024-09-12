@@ -46,3 +46,4 @@
       Boot filesystem size is now
       {{ bigboot_boot_fs_new_size | int | human_readable }}
       ({{ (bigboot_boot_fs_new_size | int - bigboot_boot_fs_original_size | int) | human_readable }} increase)
+  when: not ansible_check_mode
