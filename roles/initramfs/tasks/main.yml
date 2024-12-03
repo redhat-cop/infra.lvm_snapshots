@@ -26,6 +26,7 @@
   ansible.builtin.cron:
     name: restore_initramfs
     special_time: reboot
+     # yamllint disable-line rule:line-length
     job: '/usr/bin/mv -f /root/initramfs-{{ initramfs_kernel_version }}.img.{{ initramfs_backup_extension }} /boot/initramfs-{{ initramfs_kernel_version }}.img > /dev/null 2>&1'
 
 - name: Reboot the server
