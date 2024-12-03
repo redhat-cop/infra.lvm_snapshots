@@ -14,15 +14,21 @@
     dest: /usr/lib/dracut/modules.d/99extend_boot/increase-boot-partition.sh
     mode: '0554'
 
+- name: Configure hook removal reboot cron
+  ansible.builtin.cron:
+    name: hook_removal
+    special_time: reboot
+    job: '/usr/bin/rm -rf /usr/lib/dracut/modules.d/99extend_boot > /dev/null 2>&1'
+
 - name: Create the initramfs and reboot to run the module
   vars:
     initramfs_add_modules: "extend_boot"
   ansible.builtin.include_role:
     name: initramfs
 
-- name: Remove dracut extend boot module
-  ansible.builtin.file:
-    path: /usr/lib/dracut/modules.d/99extend_boot
+- name: Remove hook removal reboot cron
+  ansible.builtin.cron:
+    name: hook_removal
     state: absent
 
 - name: Retrieve mount points

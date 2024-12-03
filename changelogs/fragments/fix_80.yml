@@ -1,0 +1,2 @@
+bugfixes:
+  - Fix bigboot repeatedly increasing the partition size
