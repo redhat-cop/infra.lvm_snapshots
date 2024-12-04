@@ -24,17 +24,14 @@
 
 - name: Configure initramfs restore reboot cron
   ansible.builtin.cron:
-    name: restore_initramfs
+    name: initramfs restore
+    cron_file: initramfs_restore
+    user: root
     special_time: reboot
      # yamllint disable-line rule:line-length
-    job: '/usr/bin/mv -f /root/initramfs-{{ initramfs_kernel_version }}.img.{{ initramfs_backup_extension }} /boot/initramfs-{{ initramfs_kernel_version }}.img > /dev/null 2>&1'
+    job: '(mv -f /root/initramfs-{{ initramfs_kernel_version }}.img.{{ initramfs_backup_extension }} /boot/initramfs-{{ initramfs_kernel_version }}.img; rm -f /etc/cron.d/initramfs_restore) > /dev/null 2>&1'
 
 - name: Reboot the server
   ansible.builtin.reboot:
     post_reboot_delay: "{{ initramfs_post_reboot_delay }}"
     reboot_timeout: "{{ initramfs_reboot_timeout }}"
-
-- name: Remove initramfs restore reboot cron
-  ansible.builtin.cron:
-    name: restore_initramfs
-    state: absent

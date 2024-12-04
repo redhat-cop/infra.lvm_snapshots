@@ -16,20 +16,17 @@
 
 - name: Configure hook removal reboot cron
   ansible.builtin.cron:
-    name: hook_removal
+    name: bigboot hook removal
+    cron_file: bigboot_hook_removal
+    user: root
     special_time: reboot
-    job: '/usr/bin/rm -rf /usr/lib/dracut/modules.d/99extend_boot > /dev/null 2>&1'
+    job: '(rm -rf /usr/lib/dracut/modules.d/99extend_boot; rm -f /etc/cron.d/bigboot_hook_removal) > /dev/null 2>&1'
 
 - name: Create the initramfs and reboot to run the module
   vars:
     initramfs_add_modules: "extend_boot"
   ansible.builtin.include_role:
     name: initramfs
-
-- name: Remove hook removal reboot cron
-  ansible.builtin.cron:
-    name: hook_removal
-    state: absent
 
 - name: Retrieve mount points
   ansible.builtin.setup:
