@@ -77,7 +77,7 @@ fi
     for fd in /proc/"$pid"/fd/*; do
       if [[ "$(readlink "$fd")" == "$boot_disk_device" ]]; then
         offset="$(awk '/pos:/ {print $2}' /proc/"$pid"/fdinfo/"${fd##*/}")"
-        pct="$((-100*$offset/$next_part_size+100))"
+        pct="$((-100*offset/next_part_size+100))"
         break
       fi
     done
