@@ -1,0 +1,2 @@
+minor_changes:
+  - Improved console logging of bigboot progress to include percent complete
