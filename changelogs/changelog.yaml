@@ -134,3 +134,17 @@ releases:
     - btrfs_bigboot.yml
     - more_idempotent.yml
     release_date: '2024-07-15'
+  2.1.1:
+    changes:
+      bugfixes:
+      - Fix bigboot repeatedly increasing the partition size
+      minor_changes:
+      - Improve documentation and example usage of initramfs role
+      - Improved console logging of bigboot progress to include percent complete
+      - Support check mode when using the bigboot role
+    fragments:
+    - 78-improve-bigboot-check-mode.yml
+    - bigboot_progress_meter.yml
+    - fix_80.yml
+    - initramfs_docs.yml
+    release_date: '2024-12-10'

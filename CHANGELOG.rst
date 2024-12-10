@@ -4,6 +4,21 @@ LVM Snapshot Linux Role Release Notes
 
 .. contents:: Topics
 
+v2.1.1
+======
+
+Minor Changes
+-------------
+
+- Improve documentation and example usage of initramfs role
+- Improved console logging of bigboot progress to include percent complete
+- Support check mode when using the bigboot role
+
+Bugfixes
+--------
+
+- Fix bigboot repeatedly increasing the partition size
+
 v2.1.0
 ======
 
