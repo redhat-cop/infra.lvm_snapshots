@@ -71,10 +71,18 @@ if ! ret=$(echo Yes | /usr/sbin/parted "$boot_disk_device" ---pretend-input-tty 
 fi
 
 # Output progress messages to help impatient operators recognize the server is not "hung"
-( sleep 4
-  while t="$(ps -C sfdisk -o cputime=)"; do
-    echo "$name: Partition move is progressing, please wait! ($t)"
-    sleep 120
+( sleep 9
+  while pid="$(ps -C sfdisk -o pid:1=)"; do
+    pct='??'
+    for fd in /proc/"$pid"/fd/*; do
+      if [[ "$(readlink "$fd")" == "$boot_disk_device" ]]; then
+        offset="$(awk '/pos:/ {print $2}' /proc/"$pid"/fdinfo/"${fd##*/}")"
+        pct="$((-100*offset/next_part_size+100))"
+        break
+      fi
+    done
+    echo "$name: Partition move is progressing, please wait! ($pct% complete)"
+    sleep 20
   done ) &
 
 # Shift next partition
