@@ -14,6 +14,8 @@ The role configures a dracut pre-mount hook that executes during a reboot to inc
 
 To learn more about how bigboot works, check out this [video](https://people.redhat.com/bmader/bigboot-demo.mp4).
 
+Get bigboot stickers for your laptop [here](../../STICKERS.md).
+
 ## Role Variables
 
 ### `bigboot_partition_size` (String)
