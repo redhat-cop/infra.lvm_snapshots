@@ -1,3 +1,9 @@
+- name: Validate default kernel is booted
+  ansible.builtin.include_role:
+    name: initramfs
+    tasks_from: preflight
+  when: snapshot_create_boot_backup
+
 - name: Verify that all volumes exist
   ansible.builtin.include_tasks: verify_volume_exists.yml
   loop: "{{ snapshot_create_volumes }}"
