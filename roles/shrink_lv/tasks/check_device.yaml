@@ -4,7 +4,7 @@
 
 - name: Assert that the mount point exists
   ansible.builtin.assert:
-    that: (shrink_lv_mount_info | length) == 1
+    that: (shrink_lv_mount_info | length) >= 1
     fail_msg: "Mount point {{ item.device }} does not exist"
 
 - name: Assert that the filesystem is supported
