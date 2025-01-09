@@ -5,7 +5,6 @@
 
 - name: Assert that the filesystem has shrunk
   ansible.builtin.assert:
-    # yamllint disable-line rule:line-length
     that: (shrink_lv_set_device['size_total'] | int) <= (item['size'] | ansible.builtin.human_to_bytes)
     fail_msg: >
       Logical Volume {{ item['device'] }} was NOT shrunk as requested.
