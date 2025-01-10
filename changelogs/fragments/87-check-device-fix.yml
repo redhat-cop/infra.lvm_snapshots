@@ -1,0 +1,3 @@
+minor_changes:
+- Updates to support hosts with bind/overlay mounts attached
+  to the device intended to be operated on.
