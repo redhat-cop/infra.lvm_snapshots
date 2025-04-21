@@ -24,12 +24,12 @@ This collection depends on the following collections
 
 These are the roles included in the collection. Follow the links below to see the detailed documentation and example playbooks for each role.
 
-- [`snapshot_create`](./roles/snapshot_create/) - controls the creation for a defined set of LVM snapshot volumes
-- [`snapshot_remove`](./roles/snapshot_remove/) - used to remove snapshots previously created using the `snapshot_create` role
-- [`snapshot_revert`](./roles/snapshot_revert/) - used to revert to snapshots previously created using the `snapshot_create` role
-- [`shrink_lv`](./roles/shrink_lv/) - controls decreasing logical volume size along with the filesystem
-- [`bigboot`](./roles/bigboot/) - controls increasing of the boot partition while moving, and shrinking if needed, the adjacent partition
-- [`initramfs`](./roles/initramfs/) - controls the atomic flow of building and using a temporary initramfs in a reboot and restoring the original one
+- [`snapshot_create`](https://github.com/redhat-cop/infra.lvm_snapshots/tree/main/roles/snapshot_create/) - controls the creation for a defined set of LVM snapshot volumes
+- [`snapshot_remove`](https://github.com/redhat-cop/infra.lvm_snapshots/tree/main/roles/snapshot_remove/) - used to remove snapshots previously created using the `snapshot_create` role
+- [`snapshot_revert`](https://github.com/redhat-cop/infra.lvm_snapshots/tree/main/roles/snapshot_revert/) - used to revert to snapshots previously created using the `snapshot_create` role
+- [`shrink_lv`](https://github.com/redhat-cop/infra.lvm_snapshots/tree/main/roles/shrink_lv/) - controls decreasing logical volume size along with the filesystem
+- [`bigboot`](https://github.com/redhat-cop/infra.lvm_snapshots/tree/main/roles/bigboot/) - controls increasing of the boot partition while moving, and shrinking if needed, the adjacent partition
+- [`initramfs`](https://github.com/redhat-cop/infra.lvm_snapshots/tree/main/roles/initramfs/) - controls the atomic flow of building and using a temporary initramfs in a reboot and restoring the original one
 
 ## Installing the collection from Ansible Galaxy
 
