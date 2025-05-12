@@ -148,3 +148,17 @@ releases:
     - fix_80.yml
     - initramfs_docs.yml
     release_date: '2024-12-10'
+  2.1.2:
+    changes:
+      minor_changes:
+      - Fix README links to work on Galaxy and AH consoles.
+      - Prevent snapshot creation when newest installed kernel is not in use
+      - Update release workflow to build changelog first
+      - Updates to support hosts with bind/overlay mounts attached to the device intended
+        to be operated on.
+    fragments:
+    - 84-prevent-snapshot-if-newest-installed-kernel-not-in-use.yml
+    - 87-check-device-fix.yml
+    - fix_links.yml
+    - release_workflow.yml
+    release_date: '2025-05-12'
