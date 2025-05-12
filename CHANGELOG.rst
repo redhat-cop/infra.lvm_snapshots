@@ -4,6 +4,17 @@ LVM Snapshot Linux Role Release Notes
 
 .. contents:: Topics
 
+v2.1.2
+======
+
+Minor Changes
+-------------
+
+- Fix README links to work on Galaxy and AH consoles.
+- Prevent snapshot creation when newest installed kernel is not in use
+- Update release workflow to build changelog first
+- Updates to support hosts with bind/overlay mounts attached to the device intended to be operated on.
+
 v2.1.1
 ======
 
