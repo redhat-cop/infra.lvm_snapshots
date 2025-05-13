@@ -16,3 +16,17 @@ jobs:
 
     - name: Run ansible-lint
       uses: ansible/ansible-lint@main
+  build-import:
+    uses: ansible/ansible-content-actions/.github/workflows/build_import.yaml@main
+  all_green:
+    if: ${{ always() }}
+    needs:
+      - ansible-lint
+      - build-import
+    runs-on: ubuntu-latest
+    steps:
+      - run: >-
+          python -c "assert set([
+          '${{ needs.ansible-lint.result }}',
+          '${{ needs.build-import.result }}',
+          ]) == {'success'}"
