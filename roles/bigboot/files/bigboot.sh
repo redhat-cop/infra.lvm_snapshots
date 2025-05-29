@@ -70,6 +70,10 @@ if ! ret=$(echo Yes | /usr/sbin/parted "$boot_disk_device" ---pretend-input-tty 
   exit 1
 fi
 
+# Disable virtual console blanking
+prev_timeout="$(($(</sys/module/kernel/parameters/consoleblank)/60))"
+echo -ne "\x1b[9;0]"
+
 # Output progress messages to help impatient operators recognize the server is not "hung"
 ( sleep 9
   while pid="$(ps -C sfdisk -o pid:1=)"; do
@@ -125,5 +129,8 @@ if [[ "$boot_fs_type" == "xfs" ]]; then
     exit 1
   fi
 fi
+
+# Restore virtual console blanking
+echo -ne "\x1b[9;$prev_timeout]"
 
 exit 0
