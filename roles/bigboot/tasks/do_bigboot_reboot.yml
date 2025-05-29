@@ -28,6 +28,16 @@
   ansible.builtin.include_role:
     name: initramfs
 
+- name: Make sure dracut extend boot module is removed
+  ansible.builtin.file:
+    path: /usr/lib/dracut/modules.d/99extend_boot
+    state: absent
+
+- name: Make sure hook removal reboot cron is removed
+  ansible.builtin.file:
+    path: /etc/cron.d/bigboot_hook_removal
+    state: absent
+
 - name: Retrieve mount points
   ansible.builtin.setup:
     gather_subset:
