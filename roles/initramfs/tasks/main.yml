@@ -35,3 +35,14 @@
   ansible.builtin.reboot:
     post_reboot_delay: "{{ initramfs_post_reboot_delay }}"
     reboot_timeout: "{{ initramfs_reboot_timeout }}"
+
+- name: Make sure previous initramfs is restored
+   # yamllint disable-line rule:line-length
+  ansible.builtin.command: '/usr/bin/mv -f /root/initramfs-{{ initramfs_kernel_version }}.img.{{ initramfs_backup_extension }} /boot/initramfs-{{ initramfs_kernel_version }}.img'
+  changed_when: true
+  failed_when: false
+
+- name: Make sure initramfs restore reboot cron is removed
+  ansible.builtin.file:
+    path: /etc/cron.d/initramfs_restore
+    state: absent
