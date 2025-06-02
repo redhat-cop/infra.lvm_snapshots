@@ -1,4 +1,4 @@
 rules:
   indentation:
     spaces: 2
-    indent-sequences: true
+    indent-sequences: false
