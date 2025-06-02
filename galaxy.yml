@@ -19,9 +19,7 @@ documentation: https://github.com/redhat-cop/infra.lvm_snapshots
 homepage: https://github.com/redhat-cop/infra.lvm_snapshots
 issues: https://github.com/redhat-cop/infra.lvm_snapshots/issues
 build_ignore:
-- .ansible-lint
 - .pylintrc
-- .yamllint
 - .git
 - .gitignore
 - ansible.cfg
