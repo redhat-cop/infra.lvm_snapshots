@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Build collection
         run: ansible-galaxy collection build -vvv
         shell: bash
