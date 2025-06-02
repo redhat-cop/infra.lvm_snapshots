@@ -2,10 +2,10 @@
 profile: production # min, basic, moderate,safety, shared, production
 
 exclude_paths:
-  - .github
-  - changelogs
+- .github
+- changelogs
 
 mock_modules:
-  - community.general.lvol
+- community.general.lvol
 
 ...
