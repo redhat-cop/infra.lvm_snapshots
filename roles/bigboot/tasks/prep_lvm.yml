@@ -5,7 +5,7 @@
       --noheadings --nosuffix --units b
       -o pv_size /dev/{{ bigboot_next_partition_name }}
   changed_when: false
-  register: pv_size
+  register: bigboot_pv_size
 
 - name: Find volume group extent size
   ansible.builtin.command:
@@ -14,42 +14,42 @@
       --noheadings --nosuffix --units b
       -o vg_extent_size {{ bigboot_next_partition_vg }}
   changed_when: false
-  register: vg_extent_size
+  register: bigboot_vg_extent_size
   check_mode: false
 
 - name: Align bigboot increase to extent size
   ansible.builtin.set_fact:
-    bigboot_increase_bytes: "{{ bigboot_increase_bytes | int - (bigboot_increase_bytes | int % vg_extent_size.stdout | int) }}"
+    bigboot_increase_bytes: "{{ bigboot_increase_bytes | int - (bigboot_increase_bytes | int % bigboot_vg_extent_size.stdout | int) }}"
 
 - name: Test mode pvresize
   ansible.builtin.command:
     cmd: >-
       /usr/sbin/lvm pvresize
       --test --yes
-      --setphysicalvolumesize {{ pv_size.stdout | int - bigboot_increase_bytes | int }}B
+      --setphysicalvolumesize {{ bigboot_pv_size.stdout | int - bigboot_increase_bytes | int }}B
       /dev/{{ bigboot_next_partition_name }}
   when: bigboot_increase_bytes | int > 0
   changed_when: false
-  failed_when: pvresize_test.rc not in [0, 5]
-  register: pvresize_test
+  failed_when: bigboot_pvresize_test.rc not in [0, 5]
+  register: bigboot_pvresize_test
 
 - name: Evict extents from end of physical volume
   ansible.builtin.command:
     cmd: >-
       /usr/sbin/lvm pvmove
       --alloc anywhere
-      /dev/{{ bigboot_next_partition_name }}:{{ (((pv_size.stdout | int - bigboot_increase_bytes | int) / vg_extent_size.stdout | int) - 1) | int }}-
-  when: pvresize_test.rc | default(0, true) == 5
+      /dev/{{ bigboot_next_partition_name }}:{{ (((bigboot_pv_size.stdout | int - bigboot_increase_bytes | int) / bigboot_vg_extent_size.stdout | int) - 1) | int }}-
+  when: bigboot_pvresize_test.rc | default(0, true) == 5
   changed_when: true
-  register: pvmove
+  register: bigboot_pvmove_cmd
 
 - name: Real pvresize
   ansible.builtin.command:
     cmd: >-
       /usr/sbin/lvm pvresize
       --yes
-      --setphysicalvolumesize {{ pv_size.stdout | int - bigboot_increase_bytes | int }}B
+      --setphysicalvolumesize {{ bigboot_pv_size.stdout | int - bigboot_increase_bytes | int }}B
       /dev/{{ bigboot_next_partition_name }}
   when: bigboot_increase_bytes | int > 0
   changed_when: true
-  register: pvresize_real
+  register: bigboot_pvresize_real
