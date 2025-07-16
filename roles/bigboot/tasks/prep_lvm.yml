@@ -38,7 +38,9 @@
     cmd: >-
       /usr/sbin/lvm pvmove
       --alloc anywhere
-      /dev/{{ bigboot_next_partition_name }}:{{ (((bigboot_pv_size.stdout | int - bigboot_increase_bytes | int) / bigboot_vg_extent_size.stdout | int) - 1) | int }}-
+      /dev/{{ bigboot_next_partition_name }}:{{
+        (((bigboot_pv_size.stdout | int - bigboot_increase_bytes | int) / bigboot_vg_extent_size.stdout | int) - 1) | int
+      }}-
   when: bigboot_pvresize_test.rc | default(0, true) == 5
   changed_when: true
   register: bigboot_pvmove_cmd
