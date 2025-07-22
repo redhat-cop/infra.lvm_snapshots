@@ -1,2 +1,0 @@
-bugfixes:
-  - Make sure we clean up even if crond.service is disabled

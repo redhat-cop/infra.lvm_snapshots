@@ -4,6 +4,20 @@ LVM Snapshot Linux Role Release Notes
 
 .. contents:: Topics
 
+v2.1.3
+======
+
+Minor Changes
+-------------
+
+- Change var names to fix ansible-lint errors
+- Disable virtual console blanking during bigboot
+
+Bugfixes
+--------
+
+- Make sure we clean up even if crond.service is disabled
+
 v2.1.2
 ======
 
