@@ -162,3 +162,15 @@ releases:
     - fix_links.yml
     - release_workflow.yml
     release_date: '2025-05-12'
+  2.1.3:
+    changes:
+      bugfixes:
+      - Make sure we clean up even if crond.service is disabled
+      minor_changes:
+      - Change var names to fix ansible-lint errors
+      - Disable virtual console blanking during bigboot
+    fragments:
+    - disable_consoleblank.yml
+    - fix_93.yml
+    - lint_fixes.yml
+    release_date: '2025-07-22'
