@@ -106,7 +106,7 @@ def _check_free_size_for_resize(volumes, groups_info):
 
 
 def _check_requested_size(groups_info, group_field):
-    enough_space = all(group['requested_size'] <= group[group_field] for _, group in groups_info.items())
+    enough_space = all(group['requested_size'] <= group[group_field] for _key, group in groups_info.items())
     if not enough_space:
         print(json.dumps(groups_info))
         return _EXIT_CODE_VOLUME_GROUP_SPACE
