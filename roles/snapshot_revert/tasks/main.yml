@@ -66,7 +66,9 @@
 - name: Wait for the snapshot to drain
   ansible.builtin.command: "lvs --select 'vg_name = {{ item.vg_name }} && lv_name = {{ item.origin }}' --reportformat json"
   register: snapshot_revert_lv_drain_check
-  until: (snapshot_revert_lv_drain_check.stdout | from_json).report[0].lv[0].data_percent == ""
+  until: >-
+    (snapshot_revert_lv_drain_check.stdout | from_json).report[0].lv[0].data_percent == "" or
+    (snapshot_revert_lv_drain_check.stdout | from_json).report[0].lv[0].lv_attr[0] == "V"
   retries: 20
   delay: 30
   loop: "{{ snapshot_revert_snapshots }}"

@@ -1,0 +1,4 @@
+minor_changes:
+  - Update snapshot drain check when LVM thin pools are used
+  - Update active snapshot check for LVM thin pool case
+  - Update snapshot creation when using LVM thin provisioned volume

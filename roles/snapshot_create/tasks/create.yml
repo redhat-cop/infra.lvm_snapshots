@@ -38,7 +38,7 @@
     vg: "{{ item.vg }}"
     lv: "{{ item.lv }}"
     snapshot: "{{ item.lv }}_{{ snapshot_create_set_name }}"
-    size: "{{ item.size | default(omit) }}"
+    size: "{{ (item.size == '0.0B') | ternary(omit, item.size) }}"
   loop: "{{ snapshot_create_volumes }}"
 
 - name: Required packages are present

@@ -10,5 +10,4 @@
 - name: Verify that the snapshot is active
   ansible.builtin.assert:
     that:
-    - snapshot_revert_lv_attr[0] == 's'
-    - snapshot_revert_lv_attr[4] == 'a'
+    - (snapshot_revert_lv_attr[0] == 's' and snapshot_revert_lv_attr[4] == 'a') or snapshot_revert_lv_attr[0] == 'V'
