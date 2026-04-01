@@ -3,7 +3,7 @@
 main() {
     start=$(/usr/bin/date +%s)
     # run bigboot.sh to increase boot partition and file system size
-    sh /usr/bin/bigboot.sh "{{ bigboot_boot_partition_name }}" "{{ bigboot_next_partition_name }}" "{{ bigboot_increase_bytes }}"
+    sh /usr/bin/bigboot.sh "{{ bigboot_boot_partition_name }}" "{{ bigboot_next_partition_name | basename }}" "{{ bigboot_increase_bytes }}"
     status=$?
     end=$(/usr/bin/date +%s)
     # write the log file

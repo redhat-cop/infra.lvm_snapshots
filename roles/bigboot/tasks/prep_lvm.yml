@@ -3,7 +3,7 @@
     cmd: >-
       /usr/sbin/lvm pvs
       --noheadings --nosuffix --units b
-      -o pv_size /dev/{{ bigboot_next_partition_name }}
+      -o pv_size {{ bigboot_next_partition_pv }}
   changed_when: false
   register: bigboot_pv_size
 
@@ -27,7 +27,7 @@
       /usr/sbin/lvm pvresize
       --test --yes
       --setphysicalvolumesize {{ bigboot_pv_size.stdout | int - bigboot_increase_bytes | int }}B
-      /dev/{{ bigboot_next_partition_name }}
+      {{ bigboot_next_partition_pv }}
   when: bigboot_increase_bytes | int > 0
   changed_when: false
   failed_when: bigboot_pvresize_test.rc not in [0, 5]
@@ -38,7 +38,7 @@
     cmd: >-
       /usr/sbin/lvm pvmove
       --alloc anywhere
-      /dev/{{ bigboot_next_partition_name }}:{{
+      {{ bigboot_next_partition_pv }}:{{
         (((bigboot_pv_size.stdout | int - bigboot_increase_bytes | int) / bigboot_vg_extent_size.stdout | int) - 1) | int
       }}-
   when: bigboot_pvresize_test.rc | default(0, true) == 5
@@ -51,7 +51,7 @@
       /usr/sbin/lvm pvresize
       --yes
       --setphysicalvolumesize {{ bigboot_pv_size.stdout | int - bigboot_increase_bytes | int }}B
-      /dev/{{ bigboot_next_partition_name }}
+      {{ bigboot_next_partition_pv }}
   when: bigboot_increase_bytes | int > 0
   changed_when: true
   register: bigboot_pvresize_real

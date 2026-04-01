@@ -1,57 +1,74 @@
+---
 - name: Find the boot mount entry
   ansible.builtin.set_fact:
-    bigboot_boot_mount_entry: "{{ ansible_facts.mounts | selectattr('mount', 'equalto', '/boot') | first | default('', true) }}"
+    bigboot_boot_mount_entry: "{{ ansible_facts['mounts'] | selectattr('mount', 'equalto', '/boot') | first | default('', true) }}"
 
 - name: Validate boot mount entry
   ansible.builtin.assert:
     that:
-    - bigboot_boot_mount_entry.device is defined
+    - bigboot_boot_mount_entry['device'] is defined
     fail_msg: "No /boot mount point found."
 
-- name: Calculate the partition to look for
+- name: Format boot partition name
   ansible.builtin.set_fact:
-    bigboot_boot_partition_name: "{{ (bigboot_boot_mount_entry.device | split('/'))[-1] }}"
-
-- name: Find the boot device parent
-  ansible.builtin.set_fact:
-    bigboot_boot_disk: "{{ item.key }}"
-  with_dict: "{{ ansible_facts.devices }}"
-  when: bigboot_boot_partition_name in item.value.partitions
+    bigboot_boot_partition_name: "{{ bigboot_boot_mount_entry['device'] | basename }}"
 
 - name: Capture boot device details
   ansible.builtin.set_fact:
-    bigboot_boot_device_name: "/dev/{{ bigboot_boot_disk }}"
     bigboot_boot_fs_original_size: "{{ bigboot_boot_mount_entry.size_total | int }}"
-    bigboot_boot_device_sectors: "{{ ansible_facts.devices[bigboot_boot_disk].partitions[bigboot_boot_partition_name].sectors | int }}"
-    bigboot_boot_device_sectorsize: "{{ ansible_facts.devices[bigboot_boot_disk].partitions[bigboot_boot_partition_name].sectorsize | int }}"
+    bigboot_boot_device_sectors: "{{ ansible_facts.devices[bigboot_boot_partition_name[:-1]].partitions[bigboot_boot_partition_name].sectors | int }}"
+    bigboot_boot_device_sectorsize: "{{ ansible_facts.devices[bigboot_boot_partition_name[:-1]].partitions[bigboot_boot_partition_name].sectorsize | int }}"
 
 - name: Calculate boot device current size
   ansible.builtin.set_fact:
     bigboot_boot_device_bytes: "{{ bigboot_boot_device_sectors | int * bigboot_boot_device_sectorsize | int }}"
 
-- name: Find the next partition
+- name: Select the first LVM device found on boot device
   ansible.builtin.set_fact:
-    bigboot_next_partition_name: "{{ ansible_loop.nextitem.0 | default(omit, true) }}"
-  when: item.0 == bigboot_boot_partition_name
-  loop: "{{ ansible_facts.devices[bigboot_boot_disk].partitions | dictsort }}"
-  loop_control:
-    extended: true
+    bigboot_next_partition_lvm_checked: true
+    bigboot_next_partition_pv: >-
+      {{
+        (ansible_lvm['pvs'].keys() |
+          select('match', '^' + bigboot_boot_mount_entry['device'][:-1]) |
+          sort | first)
+        if (ansible_lvm is defined and
+              ansible_lvm is mapping and
+              'pvs' in ansible_lvm and
+              ansible_lvm['pvs'] is mapping)
+        else omit
+      }}
 
-- name: Validate next partition exists
-  ansible.builtin.assert:
-    that:
-    - bigboot_next_partition_name is defined
-    fail_msg: "There is no partition found after the /boot partition."
-
-- name: Find Btrfs or LVM
+- name: Set VG name if LVM is present
   ansible.builtin.set_fact:
-    bigboot_next_partition_btrfs: "{{ ansible_facts.mounts | selectattr('device', 'equalto', '/dev/' + bigboot_next_partition_name) |
-        selectattr('fstype', 'equalto', 'btrfs') | map(attribute='mount') | first | default(omit, true) }}"
-    bigboot_next_partition_vg: "{{ ansible_facts.lvm.pvs['/dev/' + bigboot_next_partition_name].vg | default(omit, true) }}"
-    bigboot_next_partition_type_checked: true
+    bigboot_next_partition_vg:
+      "{{ ansible_facts.lvm.pvs[bigboot_next_partition_pv]['vg'] | default(omit, true) }}"
+  when:
+  - bigboot_next_partition_pv is defined
+
+- name: Select the first BTRFS device found on boot device
+  when:
+  - bigboot_next_partition_pv is not defined
+  ansible.builtin.set_fact:
+    bigboot_next_partition_btrfs_checked: true
+    bigboot_next_partition_btrfs: >-
+      {{
+        ansible_facts['mounts'] | selectattr('device', 'search', bigboot_boot_partition_name[:-1]) |
+          selectattr('fstype', 'equalto', 'btrfs') |
+          sort(attribute='device') |
+          first | default(omit, true)
+      }}
 
 - name: Validate next partition type
   ansible.builtin.assert:
     that:
     - bigboot_next_partition_btrfs is defined or bigboot_next_partition_vg is defined
-    fail_msg: "The partition after the /boot partition is neither LVM or Btrfs."
+    fail_msg: "No partitions were found that are either BTRFS or LVM."
+
+- name: Set working partition name
+  ansible.builtin.set_fact:
+    bigboot_next_partition_name: >-
+      {{
+        bigboot_next_partition_btrfs['device'] |
+          default(bigboot_next_partition_pv) |
+          default(omit, true)
+      }}
