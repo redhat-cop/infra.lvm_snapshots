@@ -1,6 +1,6 @@
 - name: Find Btrfs sector size
   ansible.builtin.slurp:
-    src: "/sys/fs/btrfs/{{ ansible_facts.mounts | selectattr('mount', 'equalto', bigboot_next_partition_btrfs) | map(attribute='uuid') | first }}/sectorsize"
+    src: "/sys/fs/btrfs/{{ bigboot_next_partition_btrfs['uuid'] }}/sectorsize"
   register: bigboot_btrfs_sectorsize
 
 - name: Align bigboot increase to sector size
@@ -13,7 +13,7 @@
       /usr/sbin/btrfs
       filesystem resize
       1:-{{ bigboot_increase_bytes }}
-      {{ bigboot_next_partition_btrfs }}
+      {{ bigboot_next_partition_btrfs['mount'] }}
   when: bigboot_increase_bytes | int > 0
   changed_when: true
   register: bigboot_btrfs_resize_cmd

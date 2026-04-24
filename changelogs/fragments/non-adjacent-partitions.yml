@@ -1,0 +1,9 @@
+major_changes:
+  - Enable /boot expansion by relocating non-adjacent partitions across complex MBR and GPT layouts
+  - Implement global pre-move LVM deactivation to drop kernel disk locks prior to block shifts
+  - Inject bilingual systemd drop-in to bypass systemd-fsck start limits and prevent dependency cascade failures
+  - Replace sfdisk data moves with pure dd block copies to preserve Extended Boot Record (EBR) chains
+  - Optimize dd chunk sizing using Greatest Common Divisor (GCD) math to minimize syscall invocations
+  - Perform atomic partition table dump and restore via sfdisk after data relocation is complete
+  - Introduce stateful LVM reactivation to restore only originally active Volume Groups post-shift
+  - Update supporting Ansible code to orchestrate the pre-reboot filesystem shrink and dracut module execution
