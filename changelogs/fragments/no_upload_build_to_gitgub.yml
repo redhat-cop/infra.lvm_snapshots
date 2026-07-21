@@ -1,0 +1,2 @@
+minor_changes:
+  - Release workflow can no longer upload builds to the now immutable tags
