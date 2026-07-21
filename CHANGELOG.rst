@@ -4,6 +4,29 @@ LVM Snapshot Linux Role Release Notes
 
 .. contents:: Topics
 
+v2.2.1
+======
+
+Major Changes
+-------------
+
+- Enable /boot expansion by relocating non-adjacent partitions across complex MBR and GPT layouts
+- Implement global pre-move LVM deactivation to drop kernel disk locks prior to block shifts
+- Inject bilingual systemd drop-in to bypass systemd-fsck start limits and prevent dependency cascade failures
+- Introduce stateful LVM reactivation to restore only originally active Volume Groups post-shift
+- Optimize dd chunk sizing using Greatest Common Divisor (GCD) math to minimize syscall invocations
+- Perform atomic partition table dump and restore via sfdisk after data relocation is complete
+- Replace sfdisk data moves with pure dd block copies to preserve Extended Boot Record (EBR) chains
+- Update supporting Ansible code to orchestrate the pre-reboot filesystem shrink and dracut module execution
+
+Minor Changes
+-------------
+
+- Change name disallowed by galaxy-importer pylint
+- Update active snapshot check for LVM thin pool case
+- Update snapshot creation when using LVM thin provisioned volume
+- Update snapshot drain check when LVM thin pools are used
+
 v2.1.3
 ======
 

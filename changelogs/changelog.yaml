@@ -174,3 +174,32 @@ releases:
     - fix_93.yml
     - lint_fixes.yml
     release_date: '2025-07-22'
+  2.2.1:
+    changes:
+      major_changes:
+      - Enable /boot expansion by relocating non-adjacent partitions across complex
+        MBR and GPT layouts
+      - Implement global pre-move LVM deactivation to drop kernel disk locks prior
+        to block shifts
+      - Inject bilingual systemd drop-in to bypass systemd-fsck start limits and prevent
+        dependency cascade failures
+      - Introduce stateful LVM reactivation to restore only originally active Volume
+        Groups post-shift
+      - Optimize dd chunk sizing using Greatest Common Divisor (GCD) math to minimize
+        syscall invocations
+      - Perform atomic partition table dump and restore via sfdisk after data relocation
+        is complete
+      - Replace sfdisk data moves with pure dd block copies to preserve Extended Boot
+        Record (EBR) chains
+      - Update supporting Ansible code to orchestrate the pre-reboot filesystem shrink
+        and dracut module execution
+      minor_changes:
+      - Change name disallowed by galaxy-importer pylint
+      - Update active snapshot check for LVM thin pool case
+      - Update snapshot creation when using LVM thin provisioned volume
+      - Update snapshot drain check when LVM thin pools are used
+    fragments:
+    - fix_pylint.yml
+    - non-adjacent-partitions.yml
+    - thin-pool-drain.yml
+    release_date: '2026-07-21'
