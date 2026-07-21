@@ -6,6 +6,10 @@ on:
     types:
       - published
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   ansible-lint:
     uses: redhat-cop/infra.lvm_snapshots/.github/workflows/ansible-lint.yml@main
