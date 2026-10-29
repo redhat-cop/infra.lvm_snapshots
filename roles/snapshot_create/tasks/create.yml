@@ -33,13 +33,31 @@
   changed_when: true
   when: snapshot_create_grubenv.found is defined and snapshot_create_grubenv.found == 0
 
-- name: Create snapshots
-  community.general.lvol:
-    vg: "{{ item.vg }}"
-    lv: "{{ item.lv }}"
-    snapshot: "{{ item.lv }}_{{ snapshot_create_set_name }}"
-    size: "{{ (item.size == '0.0B') | ternary(omit, item.size) }}"
+- name: Create thick snapshots
+  ansible.builtin.command:
+    argv:
+    - lvcreate
+    - --snapshot
+    - --name
+    - "{{ item.lv }}_{{ snapshot_create_set_name }}"
+    - --size
+    - "{{ item.size }}"
+    - "/dev/{{ item.vg }}/{{ item.lv }}"
   loop: "{{ snapshot_create_volumes }}"
+  when: item.size != '0.0B'
+  changed_when: true
+
+- name: Create thin snapshots
+  ansible.builtin.command:
+    argv:
+    - lvcreate
+    - --snapshot
+    - --name
+    - "{{ item.lv }}_{{ snapshot_create_set_name }}"
+    - "/dev/{{ item.vg }}/{{ item.lv }}"
+  loop: "{{ snapshot_create_volumes }}"
+  when: item.size == '0.0B'
+  changed_when: true
 
 - name: Required packages are present
   ansible.builtin.package:
@@ -49,20 +67,30 @@
     state: present
 
 - name: Create boot backup
-  community.general.archive:
-    format: gz
+  ansible.builtin.shell:
+    cmd: |
+      files=()
+      for f in \
+        initramfs-{{ ansible_kernel }}.img \
+        vmlinuz-{{ ansible_kernel }} \
+        System.map-{{ ansible_kernel }} \
+        symvers-{{ ansible_kernel }}.gz \
+        config-{{ ansible_kernel }} \
+        .vmlinuz-{{ ansible_kernel }}.hmac \
+        grub/grub.conf \
+        grub2/grub.cfg \
+        grub2/grubenv \
+        loader/entries \
+        efi/EFI/redhat/grub.cfg; do
+        [ -e "/boot/$f" ] && files+=("$f")
+      done
+      tar --create --gzip --file /root/boot-backup-{{ snapshot_create_set_name }}.tgz -C /boot "${files[@]}"
+    executable: /bin/bash
+  changed_when: true
+  when: snapshot_create_boot_backup
+
+- name: Set boot backup permissions
+  ansible.builtin.file:
+    path: "/root/boot-backup-{{ snapshot_create_set_name }}.tgz"
     mode: '0644'
-    dest: "/root/boot-backup-{{ snapshot_create_set_name }}.tgz"
-    path:
-    - "/boot/initramfs-{{ ansible_kernel }}.img"
-    - "/boot/vmlinuz-{{ ansible_kernel }}"
-    - "/boot/System.map-{{ ansible_kernel }}"
-    - "/boot/symvers-{{ ansible_kernel }}.gz"
-    - "/boot/config-{{ ansible_kernel }}"
-    - "/boot/.vmlinuz-{{ ansible_kernel }}.hmac"
-    - /boot/grub/grub.conf
-    - /boot/grub2/grub.cfg
-    - /boot/grub2/grubenv
-    - /boot/loader/entries
-    - /boot/efi/EFI/redhat/grub.cfg
   when: snapshot_create_boot_backup

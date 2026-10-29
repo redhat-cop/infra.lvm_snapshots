@@ -12,8 +12,7 @@ tags:
 - ansible
 - lvm
 - storage
-dependencies:
-  "community.general": "*"
+dependencies: {}
 repository: https://github.com/redhat-cop/infra.lvm_snapshots
 documentation: https://github.com/redhat-cop/infra.lvm_snapshots
 homepage: https://github.com/redhat-cop/infra.lvm_snapshots
@@ -23,7 +22,6 @@ build_ignore:
 - .git
 - .gitignore
 - ansible.cfg
-- requirements.yml
 - tests
 - vendor
 ...

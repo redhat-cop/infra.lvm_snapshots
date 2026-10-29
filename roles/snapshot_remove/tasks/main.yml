@@ -9,13 +9,13 @@
       snapshot_remove_snapshots: "{{ (snapshot_remove_lvs_response.stdout | from_json).report[0].lv }}"
 
 - name: Remove snapshots
-  community.general.lvol:
-    state: absent
-    vg: "{{ item.vg_name }}"
-    lv: "{{ item.origin }}"
-    snapshot: "{{ item.lv_name }}"
-    force: true
+  ansible.builtin.command:
+    argv:
+    - lvremove
+    - --force
+    - "/dev/{{ item.vg_name }}/{{ item.lv_name }}"
   loop: "{{ snapshot_remove_snapshots }}"
+  changed_when: true
 
 - name: Remove boot backup
   ansible.builtin.file:

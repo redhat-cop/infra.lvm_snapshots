@@ -18,6 +18,14 @@ In order to run the tests from the repo without having to install them,
 the tests directory includes an [ansible.cfg](./ansible.cfg) file.
 Make sure to point to it when running the test playbook
 
+## Installing test dependencies
+
+The test playbooks require `community.general` and `ansible.posix`. Install them with:
+
+```bash
+ansible-galaxy collection install -r tests/requirements.yml
+```
+
 ## Running a test
 
 ### Inventory file

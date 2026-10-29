@@ -6,10 +6,5 @@ exclude_paths:
 - changelogs
 
 mock_modules:
-- community.general.lvol
-- community.general.lvg
-- community.general.parted
-- community.general.archive
-- community.general.filesystem
 - ansible.posix.mount
 ...
