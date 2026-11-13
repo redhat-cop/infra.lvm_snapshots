@@ -1,0 +1,2 @@
+minor_changes:
+  - Python 3.9 removed from PyCodeStyle and PyLint workflows
